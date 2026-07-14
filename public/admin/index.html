@@ -1,21 +1,351 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Borica CMS</title>
-  <style>
-    /* Minimal loader while Decap loads */
-    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    #loader {
-      display: flex; align-items: center; justify-content: center;
-      height: 100vh; color: #1a3a5c; font-size: 1.25rem;
-      background: #f8f9fa;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Borica 后台管理</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #333; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* Login */
+#login { max-width: 400px; margin: 100px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); text-align: center; }
+#login h1 { font-size: 1.5rem; margin-bottom: 8px; }
+#login p { color: #888; margin-bottom: 24px; font-size: 0.9rem; }
+#login input { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; margin-bottom: 16px; }
+#login input:focus { outline: none; border-color: #1a73e8; }
+#login button { width: 100%; padding: 12px; background: #1a73e8; color: #fff; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
+#login button:hover { background: #1557b0; }
+#login .error { color: #d93025; margin-top: 12px; font-size: 0.85rem; }
+
+/* Header */
+.header { background: #fff; padding: 16px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-radius: 8px; }
+.header h2 { font-size: 1.2rem; }
+.header button { background: none; border: 1px solid #ddd; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+
+/* Collections Grid */
+.col-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.col-card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; transition: box-shadow 0.2s; text-align: center; }
+.col-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.col-card .title { font-weight: 600; font-size: 1rem; }
+.col-card .count { color: #888; font-size: 0.8rem; margin-top: 4px; }
+
+/* Content List */
+.item-list { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); overflow: hidden; }
+.item-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; }
+.item-header h3 { font-size: 1rem; }
+.item-header button { background: none; border: none; color: #1a73e8; cursor: pointer; font-size: 0.85rem; }
+.item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
+.item-row:hover { background: #f8f9ff; }
+.item-row:last-child { border-bottom: none; }
+.item-row .title { font-weight: 500; }
+.item-row .slug { color: #888; font-size: 0.8rem; }
+
+/* Editor */
+.editor { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); padding: 24px; }
+.editor .field { margin-bottom: 16px; }
+.editor label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; color: #555; }
+.editor input, .editor textarea, .editor select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; }
+.editor textarea { min-height: 100px; resize: vertical; font-family: monospace; }
+.editor input:focus, .editor textarea:focus { outline: none; border-color: #1a73e8; }
+.editor .actions { display: flex; gap: 8px; margin-top: 20px; }
+.editor .actions button { padding: 10px 24px; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; }
+.editor .btn-save { background: #1a73e8; color: #fff; }
+.editor .btn-save:hover { background: #1557b0; }
+.editor .btn-back { background: #f5f5f5; color: #333; }
+.editor .btn-back:hover { background: #e8e8e8; }
+.editor .btn-delete { background: #d93025; color: #fff; }
+.editor .btn-delete:hover { background: #b3261e; }
+.editor .success { background: #e6f4ea; color: #1e8e3e; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; margin-top: 12px; display: none; }
+.editor .error { background: #fce8e6; color: #d93025; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; margin-top: 12px; display: none; }
+
+/* New item button */
+.btn-new { display: inline-block; padding: 8px 20px; background: #1a73e8; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+.btn-new:hover { background: #1557b0; }
+</style>
 </head>
 <body>
-  <div id="loader">Loading admin panel...</div>
-  <script src="https://unpkg.com/decap-cms@^3/dist/decap-cms.js"></script>
+
+<div id="app"></div>
+
+<script>
+const API_BASE = '/admin/api';
+let state = { view: 'login', collection: null, items: [], item: null, token: localStorage.getItem('admin_token') };
+
+function render() {
+  const app = document.getElementById('app');
+  if (!state.token) return renderLogin(app);
+  if (state.view === 'dashboard') return renderDashboard(app);
+  if (state.view === 'list') return renderList(app);
+  if (state.view === 'editor') return renderEditor(app);
+}
+
+function renderLogin(app) {
+  app.innerHTML = `
+    <div id="login">
+      <h1>Borica 后台管理</h1>
+      <p>输入管理员密码登录</p>
+      <input type="password" id="pwd" placeholder="管理员密码" onkeydown="if(event.key==='Enter')login()">
+      <button onclick="login()">登录</button>
+      <div class="error" id="loginErr"></div>
+    </div>
+  `;
+}
+
+async function login() {
+  const pwd = document.getElementById('pwd').value;
+  const r = await fetch(API_BASE + '/login', { method:'POST', body:JSON.stringify({password:pwd}) });
+  const d = await r.json();
+  if (d.token) { localStorage.setItem('admin_token', d.token); state.token = d.token; state.view = 'dashboard'; render(); }
+  else { document.getElementById('loginErr').textContent = d.error || '密码错误'; }
+}
+
+function authFetch(url, opts = {}) {
+  opts.headers = opts.headers || {};
+  opts.headers['Authorization'] = 'Bearer ' + (state.token || localStorage.getItem('admin_token'));
+  return fetch(url, opts);
+}
+
+function logout() { localStorage.removeItem('admin_token'); state.token = null; state.view = 'login'; render(); }
+
+// Collections definition
+const COLLECTIONS = [
+  { id:'products_zh', label:'产品 (中文)', folder:'src/content/products/zh' },
+  { id:'products_en', label:'Products (EN)', folder:'src/content/products/en' },
+  { id:'solutions_zh', label:'解决方案 (中文)', folder:'src/content/solutions/zh' },
+  { id:'solutions_en', label:'Solutions (EN)', folder:'src/content/solutions/en' },
+  { id:'case_studies_zh', label:'客户案例 (中文)', folder:'src/content/caseStudies/zh' },
+  { id:'case_studies_en', label:'Case Studies (EN)', folder:'src/content/caseStudies/en' },
+];
+
+const FIELDS = {
+  products_zh: [
+    { key:'title', label:'产品名称', type:'text' },
+    { key:'model', label:'型号', type:'text' },
+    { key:'category', label:'分类', type:'select', options:[
+      {v:'forming',l:'成型设备'},{v:'filling',l:'供料系统'},{v:'cleaning',l:'清洗系统'},
+      {v:'automation',l:'自动化产线'},{v:'cnc',l:'CNC加工'},{v:'safety',l:'安全防护'}
+    ]},
+    { key:'featured', label:'首页展示', type:'boolean' },
+    { key:'heroImage', label:'主图', type:'text' },
+    { key:'order', label:'排序', type:'number' },
+  ],
+  products_en: [
+    { key:'title', label:'Title', type:'text' },
+    { key:'model', label:'Model', type:'text' },
+    { key:'category', label:'Category', type:'select', options:[
+      {v:'forming',l:'Forming'},{v:'filling',l:'Filling'},{v:'cleaning',l:'Cleaning'},
+      {v:'automation',l:'Automation'},{v:'cnc',l:'CNC'},{v:'safety',l:'Safety'}
+    ]},
+    { key:'featured', label:'Featured', type:'boolean' },
+    { key:'heroImage', label:'Hero Image', type:'text' },
+    { key:'order', label:'Sort Order', type:'number' },
+  ],
+  solutions_zh: [
+    { key:'title', label:'方案名称', type:'text' },
+    { key:'subtitle', label:'副标题', type:'text' },
+    { key:'heroImage', label:'主图', type:'text' },
+  ],
+  solutions_en: [
+    { key:'title', label:'Title', type:'text' },
+    { key:'subtitle', label:'Subtitle', type:'text' },
+    { key:'heroImage', label:'Hero Image', type:'text' },
+  ],
+  case_studies_zh: [
+    { key:'title', label:'标题', type:'text' },
+    { key:'client', label:'客户名称', type:'text' },
+    { key:'industry', label:'行业', type:'text' },
+    { key:'heroImage', label:'主图', type:'text' },
+  ],
+  case_studies_en: [
+    { key:'title', label:'Title', type:'text' },
+    { key:'client', label:'Client', type:'text' },
+    { key:'industry', label:'Industry', type:'text' },
+    { key:'heroImage', label:'Hero Image', type:'text' },
+  ],
+};
+
+function renderDashboard(app) {
+  app.innerHTML = `
+    <div class="container">
+      <div class="header"><h2>Borica 内容管理</h2><button onclick="logout()">退出</button></div>
+      <div class="col-grid">
+        ${COLLECTIONS.map(c => `<div class="col-card" onclick="openList('${c.id}')"><div class="title">${c.label}</div><div class="count">${c.folder}</div></div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+async function openList(id) {
+  state.collection = id;
+  state.view = 'list';
+  render();
+}
+
+function renderList(app) {
+  const col = COLLECTIONS.find(c => c.id === state.collection);
+  app.innerHTML = `
+    <div class="container">
+      <div class="header">
+        <h2><a href="#" onclick="state.view='dashboard';render();return false" style="color:#888;text-decoration:none">←</a> ${col.label}</h2>
+        <div></div>
+      </div>
+      <div class="item-list" id="itemList">
+        <div class="item-header"><h3>加载中...</h3></div>
+      </div>
+    </div>
+  `;
+  loadItems(state.collection);
+}
+
+async function loadItems(cid) {
+  const r = await authFetch(API_BASE + '/items?collection=' + cid);
+  const d = await r.json();
+  const container = document.getElementById('itemList');
+  if (d.error) { container.innerHTML = '<div class="item-header"><h3>加载失败: ' + d.error + '</h3></div>'; return; }
+  container.innerHTML = `
+    <div class="item-header">
+      <h3>共 ${d.items.length} 项</h3>
+      <button class="btn-new" onclick="newItem('${cid}')">+ 新建</button>
+    </div>
+    ${d.items.map(i => `<div class="item-row" onclick="openEditor('${cid}','${i.slug}')">
+      <div><div class="title">${i.title || i.slug}</div><div class="slug">${i.slug}</div></div>
+      <div style="color:#888;font-size:0.8rem">${i.updated || ''}</div>
+    </div>`).join('')}
+  `;
+}
+
+async function openEditor(cid, slug) {
+  state.collection = cid;
+  state.currentSlug = slug;
+  state.view = 'editor';
+  render();
+  await loadItem(cid, slug);
+}
+
+async function newItem(cid) {
+  const slug = prompt('输入文件名标识（英文，如 new-product）:');
+  if (!slug) return;
+  state.collection = cid;
+  state.currentSlug = slug;
+  state.view = 'editor';
+  render();
+  // Create empty item
+  const fields = FIELDS[cid] || [];
+  let front = { published: true };
+  fields.forEach(f => { if (f.type === 'boolean') front[f.key] = false; else if (f.type === 'number') front[f.key] = 0; });
+  state.item = { front, body: '', slug };
+  renderEditorContent();
+}
+
+async function loadItem(cid, slug) {
+  const r = await authFetch(API_BASE + '/item?collection=' + cid + '&slug=' + slug);
+  const d = await r.json();
+  if (d.error) { showEditorError(d.error); return; }
+  state.item = d;
+  renderEditorContent();
+}
+
+function renderEditor(app) {
+  const col = COLLECTIONS.find(c => c.id === state.collection);
+  app.innerHTML = `
+    <div class="container">
+      <div class="header">
+        <h2><a href="#" onclick="state.view='list';render();openList(state.collection);return false" style="color:#888;text-decoration:none">←</a> ${col ? col.label : ''} / ${state.currentSlug || ''}</h2>
+        <div></div>
+      </div>
+      <div class="editor" id="editorContent">
+        <div style="text-align:center;padding:40px;color:#888">加载中...</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEditorContent() {
+  const container = document.getElementById('editorContent');
+  if (!container || !state.item) return;
+  const item = state.item;
+  const fields = FIELDS[state.collection] || [];
+  const front = item.front || {};
+
+  let html = '';
+  fields.forEach(f => {
+    const val = front[f.key] !== undefined ? front[f.key] : '';
+    if (f.type === 'boolean') {
+      html += `<div class="field"><label>${f.label}</label><select id="f_${f.key}"><option value="true" ${val===true?'selected':''}>是 / Yes</option><option value="false" ${val!==true?'selected':''}>否 / No</option></select></div>`;
+    } else if (f.type === 'select') {
+      const opts = f.options.map(o => `<option value="${o.v}" ${String(val)===o.v?'selected':''}>${o.l}</option>`).join('');
+      html += `<div class="field"><label>${f.label}</label><select id="f_${f.key}">${opts}</select></div>`;
+    } else if (f.type === 'number') {
+      html += `<div class="field"><label>${f.label}</label><input type="number" id="f_${f.key}" value="${val||0}"></div>`;
+    } else {
+      html += `<div class="field"><label>${f.label}</label><input type="text" id="f_${f.key}" value="${String(val||'').replace(/"/g,'&quot;')}"></div>`;
+    }
+  });
+
+  html += `<div class="field"><label>正文 (Markdown)</label><textarea id="f_body">${(item.body||'').replace(/</g,'&lt;')}</textarea></div>`;
+  html += `<div class="success" id="saveSuccess">已保存！Cloudflare 正在自动部署...</div>`;
+  html += `<div class="error" id="saveError"></div>`;
+  html += `<div class="actions">
+    <button class="btn-save" onclick="saveItem()">保存</button>
+    <button class="btn-back" onclick="state.view='list';render();openList(state.collection)">返回</button>
+    <button class="btn-delete" onclick="deleteItem()" style="margin-left:auto">删除</button>
+  </div>`;
+
+  container.innerHTML = html;
+}
+
+function showEditorError(msg) {
+  const container = document.getElementById('editorContent');
+  if (container) container.innerHTML = `<div class="field"><div class="error" style="display:block">${msg}</div><button class="btn-back" onclick="state.view='list';render();openList(state.collection)">返回</button></div>`;
+}
+
+function getFieldValue(key, type) {
+  const el = document.getElementById('f_' + key);
+  if (!el) return undefined;
+  if (type === 'boolean') return el.value === 'true';
+  if (type === 'number') return parseInt(el.value) || 0;
+  return el.value;
+}
+
+async function saveItem() {
+  const fields = FIELDS[state.collection] || [];
+  const front = {};
+  fields.forEach(f => { front[f.key] = getFieldValue(f.key, f.type); });
+  const body = document.getElementById('f_body') ? document.getElementById('f_body').value : '';
+
+  const r = await authFetch(API_BASE + '/save', {
+    method: 'POST',
+    body: JSON.stringify({
+      collection: state.collection,
+      slug: state.currentSlug,
+      front: front,
+      body: body
+    })
+  });
+  const d = await r.json();
+  if (d.error) {
+    document.getElementById('saveError').textContent = d.error;
+    document.getElementById('saveError').style.display = 'block';
+  } else {
+    document.getElementById('saveSuccess').style.display = 'block';
+    document.getElementById('saveError').style.display = 'none';
+  }
+}
+
+async function deleteItem() {
+  if (!confirm('确认删除 ' + state.currentSlug + '？此操作不可撤销！')) return;
+  const r = await authFetch(API_BASE + '/delete', {
+    method: 'POST',
+    body: JSON.stringify({ collection: state.collection, slug: state.currentSlug })
+  });
+  const d = await r.json();
+  if (d.error) { document.getElementById('saveError').textContent = d.error; document.getElementById('saveError').style.display = 'block'; }
+  else { state.view = 'list'; render(); openList(state.collection); }
+}
+
+render();
+</script>
 </body>
 </html>
