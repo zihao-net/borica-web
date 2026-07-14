@@ -1,0 +1,87 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import WhatsAppButton from '../../components/WhatsAppButton.astro';
+import { useTranslations } from '../../i18n';
+import { COMPANY } from '../../lib/constants';
+
+const locale = 'zh';
+const t = useTranslations(locale);
+---
+
+<PageLayout
+  title={t.about.title}
+  description={t.about.desc}
+  locale={locale}
+  breadcrumb={[{ label: t.about.title }]}
+>
+  {/* Hero Intro */}
+  <div class="mb-12">
+    <h1 class="text-3xl lg:text-4xl font-bold text-primary mb-4">{t.about.title}</h1>
+    <p class="text-lg text-text-muted max-w-3xl">{t.about.desc}</p>
+  </div>
+
+  {/* Company Intro */}
+  <div class="bg-white rounded-xl border border-border p-8 lg:p-10 mb-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <div>
+        <h2 class="text-2xl font-bold text-primary mb-4">{t.about.intro}</h2>
+        <p class="text-text-muted leading-relaxed mb-4">
+          {COMPANY.name}成立于2023年，公司坐落在太湖湖畔的江苏省无锡市新吴区。
+        </p>
+        <p class="text-text-muted leading-relaxed mb-4">
+          公司专注于肉制品类灌装机、智能型多路成型机（丸类、饼类）、中央清洗、高压清洗等食品行业供应链生产设备的研发、生产、销售。
+        </p>
+        <p class="text-text-muted leading-relaxed mb-4">
+          在智能型多路成型机制造领域，融合先进智能化技术与精湛结构工艺，打造出高效、精准且稳定耐用的多样化成型设备，满足丸类、饼类等异形产品的多元化生产需求。
+        </p>
+        <p class="text-text-muted leading-relaxed">
+          公司拥有大量精密加工数控车床、加工中心，配套四轴、五轴等生产设备和专业的机加工研发、生产人员，可提供非标零件的定制化业务，实现进口设备配件的国产化替代。
+        </p>
+      </div>
+      <div class="aspect-[4/3] bg-bg-alt rounded-xl overflow-hidden">
+          <img src="/images/company/cnc-workshop.png" alt="CNC精密加工车间" class="w-full h-full object-cover" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Core Advantages */}
+  <div class="mb-10">
+    <SectionHeading title={t.about.advantage} align="left" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      {t.about.advantages.map((adv) => (
+        <div class="bg-white rounded-xl border border-border p-6">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="font-semibold text-primary mb-2">{adv.title}</h3>
+          <p class="text-sm text-text-muted">{adv.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  {/* CNC Workshop */}
+  <div class="bg-bg-alt rounded-xl p-8 lg:p-10 mb-10">
+    <h2 class="text-2xl font-bold text-primary mb-3">{t.about.workshop}</h2>
+    <p class="text-text-muted mb-6 max-w-2xl">{t.about.workshopDesc}</p>
+    <div class="aspect-[16/6] bg-bg-alt rounded-xl overflow-hidden">
+      <img src="/images/company/cnc-workshop.png" alt="CNC精密加工车间" class="w-full h-full object-cover" loading="lazy" />
+    </div>
+    </div>
+  </div>
+    </div>
+  </div>
+
+  {/* Tagline Banner */}
+  <div class="bg-primary text-white rounded-xl p-8 lg:p-12 text-center">
+    <p class="text-xl lg:text-2xl font-bold mb-2">{COMPANY.tagline}</p>
+    <p class="text-primary-lighter">{locale === 'zh' ? '以技术驱动食品行业升级' : 'Driving food industry upgrade through technology'}</p>
+  </div>
+
+  <WhatsAppButton />
+</PageLayout>

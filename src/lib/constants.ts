@@ -1,0 +1,17 @@
+export const COMPANY = {
+  name: '博瑞卡（无锡）自动化科技有限公司',
+  nameEn: 'Borica (Wuxi) Automation Technology Co., Ltd.',
+  shortName: '博瑞卡',
+  shortNameEn: 'Borica',
+  tagline: '食品供料，就找博瑞卡',
+  taglineEn: 'Borica: Smart Food Feeding Solutions',
+  phone: '0510-85166119',
+  phone2: '0510-85166119',
+  email: 'info@boricatec.com',
+  whatsapp: '8618861527881',
+  wechat: 'BoricaTech',
+  address: '江苏省无锡市新吴区长江东路229号',
+  addressEn: 'No.229 East Changjiang Road, Xinwu District, Wuxi, Jiangsu, China',
+  domain: 'www.boricatec.com',
+  founded: 2023,
+};

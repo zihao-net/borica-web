@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const studies = await getCollection('caseStudies');
+  const enStudies = studies.filter((c) => c.id.startsWith('en/') && c.data.published);
+  return enStudies.map((c) => ({
+    params: { slug: c.id.replace('en/', '').replace('.md', '') },
+  }));
+}
+
+const { slug } = Astro.params;
+return Astro.redirect(`/case-studies/${slug}/`, 301);
+---

@@ -1,0 +1,283 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import { useTranslations } from '../i18n';
+import { COMPANY } from '../lib/constants';
+import { getCollection } from 'astro:content';
+
+const locale = 'en';
+const t = useTranslations(locale);
+
+const allProducts = await getCollection('products');
+const featuredProducts = allProducts
+  .filter((p) => p.id.startsWith('en/') && p.data.featured && p.data.published)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const allStudies = await getCollection('caseStudies');
+const caseStudies = allStudies
+  .filter((c) => c.id.startsWith('en/') && c.data.published);
+const synear = caseStudies.find((c) => c.id.includes('synear-food'));
+---
+
+<BaseLayout
+  title={COMPANY.shortNameEn}
+  description={COMPANY.taglineEn + ' — ' + 'Specialized in R&D, design and manufacturing of automatic food feeding systems'}
+  locale={locale}
+>
+  <!-- ========== HERO ========== -->
+  <section class="relative bg-primary text-white overflow-hidden">
+    <div class="absolute inset-0">
+      <img src="/images/company/cnc-workshop.png" alt="" class="w-full h-full object-cover opacity-10" loading="eager" />
+      <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary-dark to-[#041a30]"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+      <div class="max-w-3xl">
+        <p class="text-accent font-semibold tracking-[0.2em] uppercase text-sm mb-4">
+          Borica Automation
+        </p>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6">
+          {t.home.heroTitle}
+        </h1>
+        <p class="text-lg lg:text-xl text-white/70 leading-relaxed mb-10 max-w-2xl">
+          {t.home.heroSubtitle}
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="/products/" class="inline-flex items-center gap-2 px-8 py-3.5 bg-accent hover:bg-accent/90 text-white font-semibold rounded-lg transition-all text-lg">
+            {t.home.heroCta1}
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+          <a href="/contact/" class="inline-flex items-center gap-2 px-8 py-3.5 border border-white/30 hover:border-white/60 text-white font-semibold rounded-lg transition-all text-lg">
+            {t.home.heroCta2}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== BRAND STORY ========== -->
+  <section class="py-16 lg:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div>
+          <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">About Borica</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-primary leading-[1.15] mb-6">
+            Smart Food Feeding<br>Solutions
+          </h2>
+          <p class="text-text-muted leading-relaxed text-lg mb-8">
+            Founded in 2023, Borica specializes in R&D, design and manufacturing of automatic food feeding systems for the frozen food, bakery, and meat processing industries. With an in-house CNC precision center, we control quality from core components to final assembly — delivering reliable equipment trusted by over 50 customers worldwide with more than 300 units delivered since 2019.
+          </p>
+          <div class="flex flex-wrap gap-8 mb-8">
+            <div>
+              <div class="text-3xl font-bold text-primary">{COMPANY.founded}</div>
+              <div class="text-sm text-text-muted">Founded</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-primary">50+</div>
+              <div class="text-sm text-text-muted">Clients Served</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-primary">300+</div>
+              <div class="text-sm text-text-muted">Units Delivered</div>
+            </div>
+          </div>
+          <a href="/about/" class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-light text-white font-semibold rounded-lg transition-colors">
+            Read Our Story
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        </div>
+        <div class="aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
+          <img src="/images/company/cnc-workshop.png" alt="CNC Precision Workshop" class="w-full h-full object-cover" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== THREE PILLARS ========== -->
+  <section class="py-16 lg:py-24 bg-bg-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">Core Business</p>
+        <h2 class="text-3xl lg:text-4xl font-bold text-primary">Three Business Pillars</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <div class="bg-white p-8 rounded-lg card-hover">
+          <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-primary mb-3">Auto Feeding Systems</h3>
+          <p class="text-sm text-text-muted leading-relaxed mb-5">
+            Smart multi-lane forming machines, automatic filling/dough systems for frozen food, bakery and meat processing industries.
+          </p>
+          <a href="/solutions/filling-system/" class="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
+            Learn More &rarr;
+          </a>
+        </div>
+        <div class="bg-white p-8 rounded-lg card-hover">
+          <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-primary mb-3">CNC Precision Manufacturing</h3>
+          <p class="text-sm text-text-muted leading-relaxed mb-5">
+            In-house CNC precision center with 4-axis and 5-axis equipment, core components self-manufactured for quality and delivery control.
+          </p>
+          <a href="/products/cnc-machining/" class="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
+            Learn More &rarr;
+          </a>
+        </div>
+        <div class="bg-white p-8 rounded-lg card-hover">
+          <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-primary mb-3">Cleaning & Automation</h3>
+          <p class="text-sm text-text-muted leading-relaxed mb-5">
+            High-pressure central cleaning systems, industrial robots and custom automation lines for comprehensive food factory solutions.
+          </p>
+          <a href="/solutions/cleaning/" class="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
+            Learn More &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PRODUCT SHOWCASE ========== -->
+  <section class="py-16 lg:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">Core Products</p>
+        <h2 class="text-3xl lg:text-4xl font-bold text-primary">Our Machines</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {featuredProducts.slice(0, 4).map((product) => {
+          const slug = product.id.replace('en/', '').replace('.md', '');
+          const productImg = product.data.heroImage || 'https://images.unsplash.com/photo-1577741314755-048d8525d31e?w=400&q=80';
+          return (
+            <a href={`/products/${slug}/`} class="group bg-white border border-border hover:border-gray-300 rounded-lg overflow-hidden transition-all card-hover">
+              <div class="aspect-[4/3] bg-bg-alt overflow-hidden">
+                <img src={productImg} alt={product.data.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+              </div>
+              <div class="p-5">
+                {product.data.model && <p class="text-xs font-mono text-accent font-semibold tracking-wider mb-1">{product.data.model}</p>}
+                <h3 class="font-semibold text-primary">{product.data.title}</h3>
+                <span class="inline-flex items-center gap-1 text-xs font-semibold text-accent mt-3">
+                  View details &rarr;
+                </span>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+      <div class="text-center mt-10">
+        <a href="/products/" class="inline-flex items-center gap-2 px-8 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold rounded-lg transition-all">
+          View All Products
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TESTIMONIAL ========== -->
+  {synear && (
+    <section class="py-16 lg:py-24 bg-primary text-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <svg class="w-10 h-10 mx-auto mb-6 text-accent/60" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151C7.546 6.068 5.983 8.789 5.983 11H10v10H0z"/></svg>
+        <blockquote class="text-xl lg:text-2xl font-light leading-relaxed mb-8">
+          &ldquo;{synear.data.summary}&rdquo;
+        </blockquote>
+        <div class="flex items-center justify-center gap-4 mb-8">
+          <div class="w-11 h-11 bg-accent/20 rounded-full flex items-center justify-center text-accent font-bold">
+            {synear.data.client?.charAt(0) || 'S'}
+          </div>
+          <div class="text-left">
+            <p class="font-semibold">{synear.data.client}</p>
+            <p class="text-sm text-white/60">{synear.data.industry} · {synear.data.location}</p>
+          </div>
+        </div>
+        <a href="/case-studies/synear-food/" class="inline-flex items-center gap-2 px-8 py-3 bg-white text-primary hover:bg-gray-100 font-semibold rounded-lg transition-colors">
+          Read Full Case Study
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    </section>
+  )}
+
+  <!-- ========== INNOVATION ========== -->
+  <section class="py-16 lg:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div class="aspect-[4/3] rounded-lg overflow-hidden shadow-lg order-2 lg:order-1">
+          <img src="/images/solutions/zgl-v3-0-ui.png" alt="ZGL-V3.0 Smart Dispatching System" class="w-full h-full object-cover" loading="lazy" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">In-House R&D</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-primary leading-[1.15] mb-6">
+            Smart Dispatching<br>ZGL-V3.0
+          </h2>
+          <p class="text-text-muted leading-relaxed mb-6">
+            Proprietary smart scheduling algorithm that monitors hopper levels of 21 forming machines in real-time, intelligently prioritizes refills, and optimizes routes automatically. MES-compatible with automatic recording of filling counts and cumulative volumes.
+          </p>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-3 text-primary">
+              <svg class="w-5 h-5 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>Real-time level monitoring</span>
+            </li>
+            <li class="flex items-center gap-3 text-primary">
+              <svg class="w-5 h-5 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>Smart route optimization</span>
+            </li>
+            <li class="flex items-center gap-3 text-primary">
+              <svg class="w-5 h-5 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>MES data integration</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== GLOBAL PRESENCE ========== -->
+  <section class="py-16 lg:py-24 bg-primary text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">Global Presence</p>
+        <h2 class="text-3xl lg:text-4xl font-bold">Our Business</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-3xl mx-auto">
+        <div class="text-center bg-white/5 rounded-lg py-8 px-6 border border-white/10">
+          <div class="text-4xl lg:text-5xl font-bold text-accent">50+</div>
+          <div class="text-sm text-white/60 mt-2">Food Clients Served</div>
+        </div>
+        <div class="text-center bg-white/5 rounded-lg py-8 px-6 border border-white/10">
+          <div class="text-4xl lg:text-5xl font-bold text-accent">300+</div>
+          <div class="text-sm text-white/60 mt-2">Units Delivered</div>
+        </div>
+        <div class="text-center bg-white/5 rounded-lg py-8 px-6 border border-white/10">
+          <div class="text-4xl lg:text-5xl font-bold text-accent">24h</div>
+          <div class="text-sm text-white/60 mt-2">Service Response</div>
+        </div>
+      </div>
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-white/70 leading-relaxed">
+          Borica specializes in R&D, design and manufacturing of automatic food feeding systems, serving over 50 food enterprises globally with more than 300 units delivered. With an in-house CNC precision center and self-manufactured core components, we excel in custom design and rapid delivery.
+        </p>
+        <a href="/about/" class="inline-flex items-center gap-2 mt-6 text-white font-semibold hover:text-accent transition-colors">
+          Learn More About Us &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA BANNER ========== -->
+  <section class="py-16 lg:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl lg:text-4xl font-bold text-primary mb-4">{t.home.ctaBanner}</h2>
+      <p class="text-lg text-text-muted mb-8 max-w-xl mx-auto">{t.home.ctaBannerDesc}</p>
+      <a href="/contact/" class="inline-flex items-center gap-2 px-10 py-3.5 bg-primary hover:bg-primary-light text-white font-bold rounded-lg transition-colors text-lg">
+        {t.home.ctaButton}
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <WhatsAppButton />
+</BaseLayout>

@@ -1,0 +1,33 @@
+---
+import { COMPANY } from '../lib/constants';
+import { useTranslations } from '../i18n';
+
+const locale = Astro.url.pathname.startsWith('/zh/') ? 'zh' : 'en';
+const t = useTranslations(locale);
+
+export interface Props {
+  title?: string;
+  description?: string;
+  buttonText?: string;
+  buttonHref?: string;
+}
+
+const {
+  title = t.home.ctaBanner,
+  description = t.home.ctaBannerDesc,
+  buttonText = t.home.ctaButton,
+  buttonHref = locale === 'zh' ? '/zh/contact/' : '/contact/',
+} = Astro.props;
+---
+
+<section class="bg-primary text-white rounded-2xl p-8 lg:p-12 text-center">
+  <h3 class="text-2xl lg:text-3xl font-bold mb-3">{title}</h3>
+  <p class="text-primary-lighter mb-6 max-w-xl mx-auto">{description}</p>
+  <a
+    href={buttonHref}
+    class="inline-flex items-center gap-2 px-8 py-3.5 bg-primary hover:bg-primary-light text-white font-semibold rounded-lg transition-colors"
+  >
+    {buttonText}
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+  </a>
+</section>

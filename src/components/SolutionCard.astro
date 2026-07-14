@@ -1,0 +1,40 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  solution: CollectionEntry<'solutions'>;
+  locale: string;
+}
+
+const { solution, locale } = Astro.props;
+const { data } = solution;
+const cleanSlug = solution.id.replace(`${locale}/`, '').replace('.md', '');
+---
+
+<a
+  href={`/${locale}/solutions/${cleanSlug}/`}
+  class="card-hover group block bg-white rounded-xl border border-border overflow-hidden"
+>
+  <div class="aspect-[16/9] bg-bg-alt overflow-hidden">
+    {data.heroImage ? (
+      <img src={data.heroImage} alt={data.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+    ) : (
+      <img src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=400&q=80" alt={data.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+    )}
+  </div>
+  <div class="p-5">
+    <h3 class="text-lg font-semibold text-primary group-hover:text-primary-light transition-colors">{data.title}</h3>
+    {data.subtitle && <p class="text-sm text-text-muted mt-1">{data.subtitle}</p>}
+    {data.industry && data.industry.length > 0 && (
+      <div class="flex flex-wrap gap-1.5 mt-3">
+        {data.industry.map((ind) => (
+          <span class="text-xs px-2 py-0.5 bg-primary/5 text-primary rounded-full">{ind}</span>
+        ))}
+      </div>
+    )}
+    <span class="inline-flex items-center gap-1 text-sm font-medium text-accent mt-3 group-hover:gap-2 transition-all">
+      {locale === 'zh' ? '查看详情' : 'View Details'}
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </span>
+  </div>
+</a>

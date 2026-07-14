@@ -1,0 +1,73 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro';
+import CTABanner from '../../../components/CTABanner.astro';
+import WhatsAppButton from '../../../components/WhatsAppButton.astro';
+import { useTranslations } from '../../../i18n';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const solutions = await getCollection('solutions');
+  const zhSolutions = solutions.filter((s) => s.id.startsWith('zh/') && s.data.published);
+  return zhSolutions.map((s) => ({
+    params: { slug: s.id.replace('zh/', '').replace('.md', '') },
+    props: { solution: s },
+  }));
+}
+
+const locale = 'zh';
+const t = useTranslations(locale);
+const { solution } = Astro.props;
+const { data } = solution;
+const { Content } = await solution.render();
+---
+
+<PageLayout
+  title={data.title}
+  description={data.subtitle || data.title}
+  locale={locale}
+  breadcrumb={[
+    { label: t.solutions.title, href: `/${locale}/solutions/` },
+    { label: data.title },
+  ]}
+>
+  {/* Header */}
+  <div class="mb-10">
+    <h1 class="text-3xl lg:text-4xl font-bold text-primary mb-3">{data.title}</h1>
+    {data.subtitle && <p class="text-lg text-text-muted">{data.subtitle}</p>}
+  </div>
+
+  {/* Highlights */}
+  {data.highlights && data.highlights.length > 0 && (
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      {data.highlights.map((h) => (
+        <div class="bg-white rounded-xl border border-border p-6">
+          <h3 class="font-semibold text-primary mb-2">{h.title}</h3>
+          <p class="text-sm text-text-muted leading-relaxed">{h.description}</p>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {/* Specs */}
+  {data.specs && data.specs.length > 0 && (
+    <div class="mb-12">
+      <h2 class="text-2xl font-bold text-primary mb-6">{locale === 'zh' ? '技术参数' : 'Technical Specs'}</h2>
+      <div class="bg-white rounded-xl border border-border overflow-hidden">
+        {data.specs.map((spec, i) => (
+          <div class="flex border-b border-border last:border-0" class:list={{ 'bg-bg-alt': i % 2 === 1 }}>
+            <div class="w-1/3 px-5 py-3.5 text-sm font-medium text-text-muted">{spec.label}</div>
+            <div class="w-2/3 px-5 py-3.5 text-sm text-[#1a1a1a]">{spec.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {/* Content */}
+  <div class="prose prose-gray max-w-none mb-12">
+    <Content />
+  </div>
+
+  <CTABanner />
+  <WhatsAppButton />
+</PageLayout>

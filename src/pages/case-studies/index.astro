@@ -1,0 +1,26 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import CaseStudyCard from '../../components/CaseStudyCard.astro';
+import { useTranslations } from '../../i18n';
+import { getCollection } from 'astro:content';
+
+const locale = 'en';
+const t = useTranslations(locale);
+const allStudies = await getCollection('caseStudies');
+const caseStudies = allStudies
+  .filter((c) => c.id.startsWith('en/') && c.data.published);
+---
+
+<PageLayout
+  title={t.caseStudies.title}
+  description={t.caseStudies.desc}
+  locale={locale}
+  breadcrumb={[{ label: t.caseStudies.title }]}
+>
+  <h1 class="text-3xl lg:text-4xl font-bold text-primary mb-4">{t.caseStudies.title}</h1>
+  <p class="text-lg text-text-muted mb-8">{t.caseStudies.desc}</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {caseStudies.map((cs) => <CaseStudyCard caseStudy={cs} {locale} />)}
+  </div>
+</PageLayout>

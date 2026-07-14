@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const solutions = await getCollection('solutions');
+  const enSolutions = solutions.filter((s) => s.id.startsWith('en/') && s.data.published);
+  return enSolutions.map((s) => ({
+    params: { slug: s.id.replace('en/', '').replace('.md', '') },
+  }));
+}
+
+const { slug } = Astro.params;
+return Astro.redirect(`/solutions/${slug}/`, 301);
+---

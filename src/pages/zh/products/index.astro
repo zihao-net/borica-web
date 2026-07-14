@@ -1,0 +1,85 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro';
+import ProductCard from '../../../components/ProductCard.astro';
+import { useTranslations } from '../../../i18n';
+import { getCollection } from 'astro:content';
+
+const locale = 'zh';
+const t = useTranslations(locale);
+const allProducts = await getCollection('products');
+const products = allProducts
+  .filter((p) => p.id.startsWith('zh/') && p.data.published)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const categories = [
+  { key: 'all', label: t.products.categories.all },
+  { key: 'forming', label: t.products.categories.forming },
+  { key: 'filling', label: t.products.categories.filling },
+  { key: 'cleaning', label: t.products.categories.cleaning },
+  { key: 'automation', label: t.products.categories.automation },
+  { key: 'cnc', label: t.products.categories.cnc },
+  { key: 'safety', label: t.products.categories.safety },
+];
+---
+
+<PageLayout
+  title={t.products.title}
+  description={t.products.desc}
+  locale={locale}
+  breadcrumb={[{ label: t.products.title }]}
+>
+  <h1 class="text-3xl lg:text-4xl font-bold text-primary mb-4">{t.products.title}</h1>
+  <p class="text-lg text-text-muted mb-8">{t.products.desc}</p>
+
+  {/* Category Filter */}
+  <div class="flex flex-wrap gap-2 mb-8">
+    {categories.map((cat) => (
+      <button
+        class="category-btn px-4 py-2 text-sm font-medium rounded-full border border-border hover:border-primary hover:text-primary transition-colors"
+        data-category={cat.key}
+      >
+        {cat.label}
+      </button>
+    ))}
+  </div>
+
+  {/* Product Grid */}
+  <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    {products.map((product) => (
+      <div class="product-item" data-category={product.data.category}>
+        <ProductCard {product} {locale} />
+      </div>
+    ))}
+  </div>
+</PageLayout>
+
+<script>
+  const buttons = document.querySelectorAll('.category-btn');
+  const items = document.querySelectorAll('.product-item');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.category;
+      buttons.forEach((b) => {
+        b.classList.remove('bg-primary', 'text-white', 'border-primary');
+        b.classList.add('border-border', 'text-text-muted');
+      });
+      btn.classList.add('bg-primary', 'text-white', 'border-primary');
+      btn.classList.remove('border-border', 'text-text-muted');
+
+      items.forEach((item) => {
+        if (cat === 'all' || item.dataset.category === cat) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Select first button (all) by default
+  if (buttons.length > 0) {
+    buttons[0].classList.add('bg-primary', 'text-white', 'border-primary');
+    buttons[0].classList.remove('border-border', 'text-text-muted');
+  }
+</script>

@@ -1,0 +1,35 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  locale: string;
+  canonical?: string;
+  image?: string;
+  alternateHref?: string;
+  alternateLocale?: string;
+}
+
+const { title, description, locale, canonical, image, alternateHref, alternateLocale } = Astro.props;
+const site = 'https://www.boricatec.com';
+const fullCanonical = canonical || `${site}${Astro.url.pathname}`;
+const fullImage = image ? `${site}${image}` : `${site}/og-image.jpg`;
+---
+
+<link rel="canonical" href={fullCanonical} />
+<meta name="description" content={description} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={fullCanonical} />
+<meta property="og:image" content={fullImage} />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={fullImage} />
+
+<link rel="alternate" href={`${site}/zh/`} hrefLang="zh-CN" />
+<link rel="alternate" href={`${site}/`} hrefLang="en-US" />
+<link rel="alternate" href={`${site}/`} hrefLang="x-default" />
+{alternateHref && alternateLocale && (
+  <link rel="alternate" href={alternateHref} hrefLang={alternateLocale} />
+)}

@@ -1,0 +1,287 @@
+# Borica Website - Decap CMS Configuration
+# Replace <GITHUB_OWNER>/<REPO_NAME> with your actual GitHub repo
+
+backend:
+  name: github
+  repo: zihao-net/borica-web
+  branch: main
+  base_url: https://www.boricatec.com
+
+media_folder: public/images
+public_folder: /images
+
+site_url: https://www.boricatec.com
+display_url: https://www.boricatec.com
+locale: en
+
+# Uncomment to customize commit messages:
+# backend:
+#   commit_messages:
+#     create: "CMS: create {{collection}} {{slug}}"
+#     update: "CMS: update {{collection}} {{slug}}"
+#     delete: "CMS: delete {{collection}} {{slug}}"
+#     uploadMedia: "CMS: upload {{path}}"
+#     deleteMedia: "CMS: delete {{path}}"
+
+collections:
+  # ============================================================
+  # PRODUCTS - 中文
+  # ============================================================
+  - name: products_zh
+    label: "产品 (中文)"
+    label_singular: "产品"
+    folder: src/content/products/zh
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: model
+    summary: "{{model}} - {{title}}"
+    fields:
+      - { label: "产品名称", name: title, widget: string }
+      - { label: "型号", name: model, widget: string, required: false }
+      - label: "分类"
+        name: category
+        widget: select
+        options:
+          - { label: "成型设备", value: forming }
+          - { label: "供料系统", value: filling }
+          - { label: "清洗系统", value: cleaning }
+          - { label: "自动化产线", value: automation }
+          - { label: "CNC加工", value: cnc }
+          - { label: "安全防护", value: safety }
+      - { label: "首页展示", name: featured, widget: boolean, default: false }
+      - { label: "排序", name: order, widget: number, default: 0, value_type: int }
+      - { label: "主图", name: heroImage, widget: image, required: false }
+      - label: "产品图集"
+        name: images
+        widget: list
+        required: false
+        default: []
+        field: { label: "图片路径", name: path, widget: string }
+      - label: "技术参数"
+        name: specs
+        widget: list
+        required: false
+        default: []
+        fields:
+          - { label: "参数名", name: label, widget: string }
+          - { label: "参数值", name: value, widget: string }
+      - label: "产品特性"
+        name: features
+        widget: list
+        required: false
+        default: []
+        field: { label: "特性", name: feature, widget: string }
+      - { label: "已发布", name: published, widget: boolean, default: true }
+      - { label: "产品描述", name: body, widget: markdown, required: false }
+
+  # ============================================================
+  # PRODUCTS - English
+  # ============================================================
+  - name: products_en
+    label: "Products (EN)"
+    label_singular: "Product"
+    folder: src/content/products/en
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: model
+    summary: "{{model}} - {{title}}"
+    fields:
+      - { label: "Title", name: title, widget: string }
+      - { label: "Model", name: model, widget: string, required: false }
+      - label: "Category"
+        name: category
+        widget: select
+        options:
+          - { label: "Forming", value: forming }
+          - { label: "Filling", value: filling }
+          - { label: "Cleaning", value: cleaning }
+          - { label: "Automation", value: automation }
+          - { label: "CNC", value: cnc }
+          - { label: "Safety", value: safety }
+      - { label: "Featured", name: featured, widget: boolean, default: false }
+      - { label: "Sort Order", name: order, widget: number, default: 0, value_type: int }
+      - { label: "Hero Image", name: heroImage, widget: image, required: false }
+      - label: "Gallery Images"
+        name: images
+        widget: list
+        required: false
+        default: []
+        field: { label: "Image Path", name: path, widget: string }
+      - label: "Specifications"
+        name: specs
+        widget: list
+        required: false
+        default: []
+        fields:
+          - { label: "Label", name: label, widget: string }
+          - { label: "Value", name: value, widget: string }
+      - label: "Features"
+        name: features
+        widget: list
+        required: false
+        default: []
+        field: { label: "Feature", name: feature, widget: string }
+      - { label: "Published", name: published, widget: boolean, default: true }
+      - { label: "Description", name: body, widget: markdown, required: false }
+
+  # ============================================================
+  # SOLUTIONS - 中文
+  # ============================================================
+  - name: solutions_zh
+    label: "解决方案 (中文)"
+    label_singular: "方案"
+    folder: src/content/solutions/zh
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    fields:
+      - { label: "方案名称", name: title, widget: string }
+      - { label: "副标题", name: subtitle, widget: string, required: false }
+      - label: "适用行业"
+        name: industry
+        widget: list
+        required: false
+        default: []
+        field: { label: "行业", name: industry_item, widget: string }
+      - { label: "主图", name: heroImage, widget: image, required: false }
+      - { label: "概览", name: overview, widget: text, required: false }
+      - label: "亮点"
+        name: highlights
+        widget: list
+        required: false
+        default: []
+        fields:
+          - { label: "标题", name: title, widget: string }
+          - { label: "描述", name: description, widget: text }
+      - label: "规格参数"
+        name: specs
+        widget: list
+        required: false
+        default: []
+        fields:
+          - { label: "参数名", name: label, widget: string }
+          - { label: "参数值", name: value, widget: string }
+      - { label: "已发布", name: published, widget: boolean, default: true }
+      - { label: "详细内容", name: body, widget: markdown, required: false }
+
+  # ============================================================
+  # SOLUTIONS - English
+  # ============================================================
+  - name: solutions_en
+    label: "Solutions (EN)"
+    label_singular: "Solution"
+    folder: src/content/solutions/en
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    fields:
+      - { label: "Title", name: title, widget: string }
+      - { label: "Subtitle", name: subtitle, widget: string, required: false }
+      - label: "Industries"
+        name: industry
+        widget: list
+        required: false
+        default: []
+        field: { label: "Industry", name: industry_item, widget: string }
+      - { label: "Hero Image", name: heroImage, widget: image, required: false }
+      - { label: "Overview", name: overview, widget: text, required: false }
+      - label: "Highlights"
+        name: highlights
+        widget: list
+        required: false
+        default: []
+        fields:
+          - { label: "Title", name: title, widget: string }
+          - { label: "Description", name: description, widget: text }
+      - label: "Specifications"
+        name: specs
+        widget: list
+        required: false
+        default: []
+        fields:
+          - { label: "Label", name: label, widget: string }
+          - { label: "Value", name: value, widget: string }
+      - { label: "Published", name: published, widget: boolean, default: true }
+      - { label: "Content", name: body, widget: markdown, required: false }
+
+  # ============================================================
+  # CASE STUDIES - 中文
+  # ============================================================
+  - name: case_studies_zh
+    label: "客户案例 (中文)"
+    label_singular: "案例"
+    folder: src/content/caseStudies/zh
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: client
+    summary: "{{client}} - {{title}}"
+    fields:
+      - { label: "标题", name: title, widget: string }
+      - { label: "客户名称", name: client, widget: string, required: false }
+      - { label: "行业", name: industry, widget: string, required: false }
+      - { label: "地点", name: location, widget: string, required: false }
+      - { label: "日期", name: date, widget: string, required: false }
+      - { label: "主图", name: heroImage, widget: image, required: false }
+      - { label: "摘要", name: summary, widget: text, required: false }
+      - { label: "挑战", name: challenge, widget: text, required: false }
+      - { label: "方案", name: solution, widget: text, required: false }
+      - label: "成果数据"
+        name: results
+        widget: list
+        required: false
+        default: []
+        fields:
+          - { label: "指标", name: metric, widget: string }
+          - { label: "数值", name: value, widget: string }
+      - label: "图片集"
+        name: images
+        widget: list
+        required: false
+        default: []
+        field: { label: "图片路径", name: path, widget: string }
+      - { label: "已发布", name: published, widget: boolean, default: true }
+      - { label: "详细内容", name: body, widget: markdown, required: false }
+
+  # ============================================================
+  # CASE STUDIES - English
+  # ============================================================
+  - name: case_studies_en
+    label: "Case Studies (EN)"
+    label_singular: "Case Study"
+    folder: src/content/caseStudies/en
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: client
+    summary: "{{client}} - {{title}}"
+    fields:
+      - { label: "Title", name: title, widget: string }
+      - { label: "Client", name: client, widget: string, required: false }
+      - { label: "Industry", name: industry, widget: string, required: false }
+      - { label: "Location", name: location, widget: string, required: false }
+      - { label: "Date", name: date, widget: string, required: false }
+      - { label: "Hero Image", name: heroImage, widget: image, required: false }
+      - { label: "Summary", name: summary, widget: text, required: false }
+      - { label: "Challenge", name: challenge, widget: text, required: false }
+      - { label: "Solution", name: solution, widget: text, required: false }
+      - label: "Results"
+        name: results
+        widget: list
+        required: false
+        default: []
+        fields:
+          - { label: "Metric", name: metric, widget: string }
+          - { label: "Value", name: value, widget: string }
+      - label: "Gallery"
+        name: images
+        widget: list
+        required: false
+        default: []
+        field: { label: "Image Path", name: path, widget: string }
+      - { label: "Published", name: published, widget: boolean, default: true }
+      - { label: "Content", name: body, widget: markdown, required: false }

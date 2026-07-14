@@ -1,0 +1,118 @@
+---
+import { COMPANY } from '../lib/constants';
+import { useTranslations } from '../i18n';
+
+const locale = Astro.url.pathname.startsWith('/zh/') ? 'zh' : 'en';
+const t = useTranslations(locale);
+const currentPath = Astro.url.pathname;
+const targetLocale = locale === 'zh' ? 'en' : 'zh';
+const switchPath = locale === 'zh'
+  ? currentPath.replace('/zh', '')
+  : '/zh' + currentPath;
+const localizedPath = (path: string) => locale === 'zh' ? `/zh${path}` : path;
+
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const navItems: NavItem[] = [
+  { label: t.nav.home, href: localizedPath('/') },
+  { label: t.nav.products, href: localizedPath('/products/') },
+  { label: t.nav.solutions, href: localizedPath('/solutions/') },
+  { label: t.nav.caseStudies, href: localizedPath('/case-studies/') },
+  { label: t.nav.about, href: localizedPath('/about/') },
+  { label: t.nav.service, href: localizedPath('/service/') },
+  { label: t.nav.contact, href: localizedPath('/contact/') },
+];
+---
+
+<header id="site-header" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border transition-shadow duration-300">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    {/* Logo */}
+    <a href={localizedPath('/')} class="flex items-center gap-3 shrink-0">
+      <img src="/images/logo.png" alt={COMPANY.shortName} class="h-16 w-auto" />
+    </a>
+
+    {/* Desktop Nav */}
+    <div class="hidden lg:flex items-center gap-1">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class="nav-link px-4 py-2 text-lg font-medium rounded-md transition-colors"
+          class:list={{
+            'text-primary bg-primary/5': currentPath === item.href || (item.href !== localizedPath('/') && currentPath.startsWith(item.href)),
+            'text-text-muted hover:text-primary hover:bg-gray-50': !(currentPath === item.href || (item.href !== localizedPath('/') && currentPath.startsWith(item.href))),
+          }}
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+
+    {/* Language Switcher + Mobile Menu Toggle */}
+    <div class="flex items-center gap-3">
+      <a
+        href={switchPath}
+        class="btn-shine text-base font-semibold px-5 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+      >
+        {t.common.languageSwitch}
+      </a>
+      {/* Mobile Menu Button */}
+      <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md text-text-muted hover:text-primary" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          <path id="menu-icon-close" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" class="hidden" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  {/* Mobile Menu */}
+  <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-border">
+    <div class="px-4 py-3 space-y-1">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class="block px-3 py-3 text-lg font-medium rounded-md transition-colors"
+          class:list={{
+            'text-primary bg-primary/5': currentPath === item.href,
+            'text-text-muted hover:text-primary hover:bg-gray-50': currentPath !== item.href,
+          }}
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+
+  if (btn && menu) {
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+      iconOpen?.classList.toggle('hidden');
+      iconClose?.classList.toggle('hidden');
+    });
+  }
+
+  // Scroll shadow with passive listener for performance
+  const header = document.getElementById('site-header');
+  if (header) {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          header.classList.toggle('shadow-md', window.scrollY > 16);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+</script>

@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  caseStudy: CollectionEntry<'caseStudies'>;
+  locale: string;
+}
+
+const { caseStudy, locale } = Astro.props;
+const { data } = caseStudy;
+const cleanSlug = caseStudy.id.replace(`${locale}/`, '').replace('.md', '');
+---
+
+<a
+  href={`/${locale}/case-studies/${cleanSlug}/`}
+  class="card-hover group block bg-white rounded-xl border border-border overflow-hidden"
+>
+  <div class="aspect-[16/9] bg-bg-alt overflow-hidden">
+    {data.heroImage ? (
+      <img src={data.heroImage} alt={data.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+    ) : (
+      <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80" alt={data.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+    )}
+  </div>
+  <div class="p-5">
+    {data.client && <span class="text-xs font-semibold text-accent uppercase tracking-wider">{data.client}</span>}
+    <h3 class="text-lg font-semibold text-primary mt-1 group-hover:text-primary-light transition-colors">{data.title}</h3>
+    {data.summary && <p class="text-sm text-text-muted mt-2 line-clamp-2">{data.summary}</p>}
+    {data.results && data.results.length > 0 && (
+      <div class="flex flex-wrap gap-3 mt-3">
+        {data.results.slice(0, 2).map((r) => (
+          <span class="text-xs font-semibold text-primary bg-primary/5 px-2 py-1 rounded">{r.metric}: {r.value}</span>
+        ))}
+      </div>
+    )}
+    <span class="inline-flex items-center gap-1 text-sm font-medium text-accent mt-3 group-hover:gap-2 transition-all">
+      {locale === 'zh' ? '查看详情' : 'View Details'}
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </span>
+  </div>
+</a>

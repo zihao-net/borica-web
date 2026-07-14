@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects
+# Old /en/ URLs → root (for backward compatibility)
+/en/*  /:splat  301
+/en     /       301

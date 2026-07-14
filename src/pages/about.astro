@@ -1,0 +1,77 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import { useTranslations } from '../i18n';
+import { COMPANY } from '../lib/constants';
+
+const locale = 'en';
+const t = useTranslations(locale);
+---
+
+<PageLayout
+  title={t.about.title}
+  description={t.about.desc}
+  locale={locale}
+  breadcrumb={[{ label: t.about.title }]}
+>
+  <div class="mb-12">
+    <h1 class="text-3xl lg:text-4xl font-bold text-primary mb-4">{t.about.title}</h1>
+    <p class="text-lg text-text-muted max-w-3xl">{t.about.desc}</p>
+  </div>
+
+  <div class="bg-white rounded-xl border border-border p-8 lg:p-10 mb-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <div>
+        <h2 class="text-2xl font-bold text-primary mb-4">{t.about.intro}</h2>
+        <p class="text-text-muted leading-relaxed mb-4">
+          Borica (Wuxi) Automation Technology Co., Ltd. was founded in 2023, headquartered in the Xinwu District of Wuxi, Jiangsu Province — a key economic hub in the Yangtze River Delta.
+        </p>
+        <p class="text-text-muted leading-relaxed mb-4">
+          We specialize in R&D, design and manufacturing of food factory automation equipment including forming machines (meatballs, patties), automatic filling/feeding systems, high-pressure and central cleaning systems.
+        </p>
+        <p class="text-text-muted leading-relaxed mb-4">
+          In the smart multi-lane forming machine field, we integrate advanced intelligent technology with precision mechanical engineering to create efficient, accurate and durable forming equipment for diverse product needs.
+        </p>
+        <p class="text-text-muted leading-relaxed">
+          We operate extensive precision CNC lathes and machining centers with 4-axis and 5-axis equipment, providing custom non-standard parts and import equipment parts localization services.
+        </p>
+      </div>
+      <div class="aspect-[4/3] bg-bg-alt rounded-xl flex items-center justify-center">
+                <div class="aspect-[4/3] bg-bg-alt rounded-xl overflow-hidden">
+          <img src="/images/company/cnc-workshop.png" alt="CNC Precision Workshop" class="w-full h-full object-cover" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-10">
+    <SectionHeading title={t.about.advantage} align="left" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      {t.about.advantages.map((adv) => (
+        <div class="bg-white rounded-xl border border-border p-6">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="font-semibold text-primary mb-2">{adv.title}</h3>
+          <p class="text-sm text-text-muted">{adv.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="bg-bg-alt rounded-xl p-8 lg:p-10 mb-10">
+    <h2 class="text-2xl font-bold text-primary mb-3">{t.about.workshop}</h2>
+    <p class="text-text-muted mb-6 max-w-2xl">{t.about.workshopDesc}</p>
+    <div class="aspect-[16/6] bg-bg-alt rounded-xl overflow-hidden">
+      <img src="/images/company/cnc-workshop.png" alt="CNC Precision Workshop" class="w-full h-full object-cover" loading="lazy" />
+    </div>
+  </div>
+
+  <div class="bg-primary text-white rounded-xl p-8 lg:p-12 text-center">
+    <p class="text-xl lg:text-2xl font-bold mb-2">{COMPANY.taglineEn}</p>
+    <p class="text-primary-lighter">Driving food industry upgrade through technology</p>
+  </div>
+
+  <WhatsAppButton />
+</PageLayout>

@@ -1,0 +1,66 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import CTABanner from '../../components/CTABanner.astro';
+import WhatsAppButton from '../../components/WhatsAppButton.astro';
+import { useTranslations } from '../../i18n';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const caseStudies = await getCollection('caseStudies');
+  const enStudies = caseStudies.filter((c) => c.id.startsWith('en/') && c.data.published);
+  return enStudies.map((c) => ({
+    params: { slug: c.id.replace('en/', '').replace('.md', '') },
+    props: { caseStudy: c },
+  }));
+}
+
+const locale = 'en';
+const t = useTranslations(locale);
+const { caseStudy } = Astro.props;
+const { data } = caseStudy;
+const { Content } = await caseStudy.render();
+---
+
+<PageLayout
+  title={data.title}
+  description={data.summary || data.title}
+  locale={locale}
+  breadcrumb={[
+    { label: t.caseStudies.title, href: `/case-studies/` },
+    { label: data.title },
+  ]}
+>
+  <div class="mb-8">
+    {data.client && <span class="text-sm font-semibold text-accent uppercase tracking-wider">{data.client}</span>}
+    <h1 class="text-3xl lg:text-4xl font-bold text-primary mt-1 mb-3">{data.title}</h1>
+    <div class="flex flex-wrap gap-4 text-sm text-text-muted">
+      {data.industry && <span>Industry: {data.industry}</span>}
+      {data.location && <span>Location: {data.location}</span>}
+      {data.date && <span>Date: {data.date}</span>}
+    </div>
+  </div>
+
+  {data.results && data.results.length > 0 && (
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+      {data.results.map((r) => (
+        <div class="bg-bg-alt rounded-xl p-5 text-center">
+          <div class="text-2xl lg:text-3xl font-bold text-accent mb-1">{r.value}</div>
+          <div class="text-sm text-text-muted">{r.metric}</div>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {data.summary && (
+    <p class="text-lg text-text-muted leading-relaxed mb-8 p-6 bg-primary/5 rounded-xl border-l-4 border-primary">
+      {data.summary}
+    </p>
+  )}
+
+  <div class="prose prose-gray max-w-none mb-12">
+    <Content />
+  </div>
+
+  <CTABanner />
+  <WhatsAppButton />
+</PageLayout>

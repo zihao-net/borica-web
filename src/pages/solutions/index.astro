@@ -1,0 +1,26 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import SolutionCard from '../../components/SolutionCard.astro';
+import { useTranslations } from '../../i18n';
+import { getCollection } from 'astro:content';
+
+const locale = 'en';
+const t = useTranslations(locale);
+const allSolutions = await getCollection('solutions');
+const solutions = allSolutions
+  .filter((s) => s.id.startsWith('en/') && s.data.published);
+---
+
+<PageLayout
+  title={t.solutions.title}
+  description={t.solutions.desc}
+  locale={locale}
+  breadcrumb={[{ label: t.solutions.title }]}
+>
+  <h1 class="text-3xl lg:text-4xl font-bold text-primary mb-4">{t.solutions.title}</h1>
+  <p class="text-lg text-text-muted mb-8">{t.solutions.desc}</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {solutions.map((solution) => <SolutionCard {solution} {locale} />)}
+  </div>
+</PageLayout>
