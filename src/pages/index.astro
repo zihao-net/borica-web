@@ -17,6 +17,9 @@ const allStudies = await getCollection('caseStudies');
 const caseStudies = allStudies
   .filter((c) => c.id.startsWith('en/') && c.data.published);
 const synear = caseStudies.find((c) => c.id.includes('synear-food'));
+
+const homePage = (await getCollection('pages')).find((p) => p.id === 'en/home');
+const h = homePage?.data ?? {};
 ---
 
 <BaseLayout
@@ -27,27 +30,27 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
   <!-- ========== HERO ========== -->
   <section class="relative bg-primary text-white overflow-hidden">
     <div class="absolute inset-0">
-      <img src="/images/company/cnc-workshop.png" alt="" class="w-full h-full object-cover opacity-10" loading="eager" />
+      <img src={h.heroImage || '/images/company/cnc-workshop.png'} alt="" class="w-full h-full object-cover opacity-10" loading="eager" />
       <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary-dark to-[#041a30]"></div>
     </div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
       <div class="max-w-3xl">
         <p class="text-accent font-semibold tracking-[0.2em] uppercase text-sm mb-4">
-          Borica Automation
+          {h.heroBadge || 'Borica Automation'}
         </p>
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6">
-          {t.home.heroTitle}
+          {h.heroTitle || t.home.heroTitle}
         </h1>
         <p class="text-lg lg:text-xl text-white/70 leading-relaxed mb-10 max-w-2xl">
-          {t.home.heroSubtitle}
+          {h.heroSubtitle || t.home.heroSubtitle}
         </p>
         <div class="flex flex-wrap gap-4">
           <a href="/products/" class="inline-flex items-center gap-2 px-8 py-3.5 bg-accent hover:bg-accent/90 text-white font-semibold rounded-lg transition-all text-lg">
-            {t.home.heroCta1}
+            {h.heroCta1 || t.home.heroCta1}
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
           </a>
           <a href="/contact/" class="inline-flex items-center gap-2 px-8 py-3.5 border border-white/30 hover:border-white/60 text-white font-semibold rounded-lg transition-all text-lg">
-            {t.home.heroCta2}
+            {h.heroCta2 || t.home.heroCta2}
           </a>
         </div>
       </div>
@@ -59,34 +62,32 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         <div>
-          <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">About Borica</p>
-          <h2 class="text-3xl lg:text-4xl font-bold text-primary leading-[1.15] mb-6">
-            Smart Food Feeding<br>Solutions
-          </h2>
+          <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">{h.brandLabel || 'About Borica'}</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-primary leading-[1.15] mb-6" set:html={h.brandHeading || 'Smart Food Feeding<br>Solutions'} />
           <p class="text-text-muted leading-relaxed text-lg mb-8">
-            Founded in 2023, Borica specializes in R&D, design and manufacturing of automatic food feeding systems for the frozen food, bakery, and meat processing industries. With an in-house CNC precision center, we control quality from core components to final assembly — delivering reliable equipment trusted by over 50 customers worldwide with more than 300 units delivered since 2019.
+            {h.brandDescription || 'Founded in 2023, Borica specializes in R&D, design and manufacturing of automatic food feeding systems for the frozen food, bakery, and meat processing industries. With an in-house CNC precision center, we control quality from core components to final assembly — delivering reliable equipment trusted by over 50 customers worldwide with more than 300 units delivered since 2019.'}
           </p>
           <div class="flex flex-wrap gap-8 mb-8">
             <div>
-              <div class="text-3xl font-bold text-primary">{COMPANY.founded}</div>
-              <div class="text-sm text-text-muted">Founded</div>
+              <div class="text-3xl font-bold text-primary">{h.stat1Value || COMPANY.founded}</div>
+              <div class="text-sm text-text-muted">{h.stat1Label || 'Founded'}</div>
             </div>
             <div>
-              <div class="text-3xl font-bold text-primary">50+</div>
-              <div class="text-sm text-text-muted">Clients Served</div>
+              <div class="text-3xl font-bold text-primary">{h.stat2Value || '50+'}</div>
+              <div class="text-sm text-text-muted">{h.stat2Label || 'Clients Served'}</div>
             </div>
             <div>
-              <div class="text-3xl font-bold text-primary">300+</div>
-              <div class="text-sm text-text-muted">Units Delivered</div>
+              <div class="text-3xl font-bold text-primary">{h.stat3Value || '300+'}</div>
+              <div class="text-sm text-text-muted">{h.stat3Label || 'Units Delivered'}</div>
             </div>
           </div>
           <a href="/about/" class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-light text-white font-semibold rounded-lg transition-colors">
-            Read Our Story
+            {h.brandCta || 'Read Our Story'}
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
           </a>
         </div>
         <div class="aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
-          <img src="/images/company/cnc-workshop.png" alt="CNC Precision Workshop" class="w-full h-full object-cover" loading="lazy" />
+          <img src={h.brandImage || '/images/company/cnc-workshop.png'} alt="CNC Precision Workshop" class="w-full h-full object-cover" loading="lazy" />
         </div>
       </div>
     </div>
@@ -97,18 +98,18 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">Core Business</p>
-        <h2 class="text-3xl lg:text-4xl font-bold text-primary">Three Business Pillars</h2>
+        <h2 class="text-3xl lg:text-4xl font-bold text-primary">{h.pillarsTitle || 'Three Business Pillars'}</h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
         <div class="bg-white p-8 rounded-lg card-hover">
           <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-5">
             <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           </div>
-          <h3 class="text-lg font-bold text-primary mb-3">Auto Feeding Systems</h3>
+          <h3 class="text-lg font-bold text-primary mb-3">{h.pillar1Title || 'Auto Feeding Systems'}</h3>
           <p class="text-sm text-text-muted leading-relaxed mb-5">
-            Smart multi-lane forming machines, automatic filling/dough systems for frozen food, bakery and meat processing industries.
+            {h.pillar1Desc || 'Smart multi-lane forming machines, automatic filling/dough systems for frozen food, bakery and meat processing industries.'}
           </p>
-          <a href="/solutions/filling-system/" class="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
+          <a href={h.pillar1Link || '/solutions/filling-system/'} class="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
             Learn More &rarr;
           </a>
         </div>
@@ -116,11 +117,11 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
           <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-5">
             <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           </div>
-          <h3 class="text-lg font-bold text-primary mb-3">CNC Precision Manufacturing</h3>
+          <h3 class="text-lg font-bold text-primary mb-3">{h.pillar2Title || 'CNC Precision Manufacturing'}</h3>
           <p class="text-sm text-text-muted leading-relaxed mb-5">
-            In-house CNC precision center with 4-axis and 5-axis equipment, core components self-manufactured for quality and delivery control.
+            {h.pillar2Desc || 'In-house CNC precision center with 4-axis and 5-axis equipment, core components self-manufactured for quality and delivery control.'}
           </p>
-          <a href="/products/cnc-machining/" class="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
+          <a href={h.pillar2Link || '/products/cnc-machining/'} class="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
             Learn More &rarr;
           </a>
         </div>
@@ -128,11 +129,11 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
           <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-5">
             <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
           </div>
-          <h3 class="text-lg font-bold text-primary mb-3">Cleaning & Automation</h3>
+          <h3 class="text-lg font-bold text-primary mb-3">{h.pillar3Title || 'Cleaning & Automation'}</h3>
           <p class="text-sm text-text-muted leading-relaxed mb-5">
-            High-pressure central cleaning systems, industrial robots and custom automation lines for comprehensive food factory solutions.
+            {h.pillar3Desc || 'High-pressure central cleaning systems, industrial robots and custom automation lines for comprehensive food factory solutions.'}
           </p>
-          <a href="/solutions/cleaning/" class="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
+          <a href={h.pillar3Link || '/solutions/cleaning/'} class="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
             Learn More &rarr;
           </a>
         </div>
@@ -144,8 +145,8 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
   <section class="py-16 lg:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
-        <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">Core Products</p>
-        <h2 class="text-3xl lg:text-4xl font-bold text-primary">Our Machines</h2>
+        <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">{h.productSectionLabel || 'Core Products'}</p>
+        <h2 class="text-3xl lg:text-4xl font-bold text-primary">{h.productSectionTitle || 'Our Machines'}</h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {featuredProducts.slice(0, 4).map((product) => {
@@ -206,28 +207,26 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         <div class="aspect-[4/3] rounded-lg overflow-hidden shadow-lg order-2 lg:order-1">
-          <img src="/images/solutions/zgl-v3-0-ui.png" alt="ZGL-V3.0 Smart Dispatching System" class="w-full h-full object-cover" loading="lazy" />
+          <img src={h.innovationImage || '/images/solutions/zgl-v3-0-ui.png'} alt="ZGL-V3.0 Smart Dispatching System" class="w-full h-full object-cover" loading="lazy" />
         </div>
         <div class="order-1 lg:order-2">
-          <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">In-House R&D</p>
-          <h2 class="text-3xl lg:text-4xl font-bold text-primary leading-[1.15] mb-6">
-            Smart Dispatching<br>ZGL-V3.0
-          </h2>
+          <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">{h.innovationLabel || 'In-House R&D'}</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-primary leading-[1.15] mb-6" set:html={h.innovationTitle || 'Smart Dispatching<br>ZGL-V3.0'} />
           <p class="text-text-muted leading-relaxed mb-6">
-            Proprietary smart scheduling algorithm that monitors hopper levels of 21 forming machines in real-time, intelligently prioritizes refills, and optimizes routes automatically. MES-compatible with automatic recording of filling counts and cumulative volumes.
+            {h.innovationDesc || 'Proprietary smart scheduling algorithm that monitors hopper levels of 21 forming machines in real-time, intelligently prioritizes refills, and optimizes routes automatically. MES-compatible with automatic recording of filling counts and cumulative volumes.'}
           </p>
           <ul class="space-y-2">
             <li class="flex items-center gap-3 text-primary">
               <svg class="w-5 h-5 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-              <span>Real-time level monitoring</span>
+              <span>{h.innovationFeature1 || 'Real-time level monitoring'}</span>
             </li>
             <li class="flex items-center gap-3 text-primary">
               <svg class="w-5 h-5 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-              <span>Smart route optimization</span>
+              <span>{h.innovationFeature2 || 'Smart route optimization'}</span>
             </li>
             <li class="flex items-center gap-3 text-primary">
               <svg class="w-5 h-5 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-              <span>MES data integration</span>
+              <span>{h.innovationFeature3 || 'MES data integration'}</span>
             </li>
           </ul>
         </div>
@@ -239,17 +238,17 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
   <section class="py-16 lg:py-24 bg-primary text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
-        <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">Global Presence</p>
-        <h2 class="text-3xl lg:text-4xl font-bold">Our Business</h2>
+        <p class="text-accent font-semibold tracking-[0.15em] uppercase text-sm mb-4">{h.globalLabel || 'Global Presence'}</p>
+        <h2 class="text-3xl lg:text-4xl font-bold">{h.globalTitle || 'Our Business'}</h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-3xl mx-auto">
         <div class="text-center bg-white/5 rounded-lg py-8 px-6 border border-white/10">
-          <div class="text-4xl lg:text-5xl font-bold text-accent">50+</div>
-          <div class="text-sm text-white/60 mt-2">Food Clients Served</div>
+          <div class="text-4xl lg:text-5xl font-bold text-accent">{h.stat2Value || '50+'}</div>
+          <div class="text-sm text-white/60 mt-2">{h.stat2Label || 'Food Clients Served'}</div>
         </div>
         <div class="text-center bg-white/5 rounded-lg py-8 px-6 border border-white/10">
-          <div class="text-4xl lg:text-5xl font-bold text-accent">300+</div>
-          <div class="text-sm text-white/60 mt-2">Units Delivered</div>
+          <div class="text-4xl lg:text-5xl font-bold text-accent">{h.stat3Value || '300+'}</div>
+          <div class="text-sm text-white/60 mt-2">{h.stat3Label || 'Units Delivered'}</div>
         </div>
         <div class="text-center bg-white/5 rounded-lg py-8 px-6 border border-white/10">
           <div class="text-4xl lg:text-5xl font-bold text-accent">24h</div>
@@ -258,7 +257,7 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
       </div>
       <div class="max-w-3xl mx-auto text-center">
         <p class="text-white/70 leading-relaxed">
-          Borica specializes in R&D, design and manufacturing of automatic food feeding systems, serving over 50 food enterprises globally with more than 300 units delivered. With an in-house CNC precision center and self-manufactured core components, we excel in custom design and rapid delivery.
+          {h.globalDesc || 'Borica specializes in R&D, design and manufacturing of automatic food feeding systems, serving over 50 food enterprises globally with more than 300 units delivered. With an in-house CNC precision center and self-manufactured core components, we excel in custom design and rapid delivery.'}
         </p>
         <a href="/about/" class="inline-flex items-center gap-2 mt-6 text-white font-semibold hover:text-accent transition-colors">
           Learn More About Us &rarr;
@@ -270,10 +269,10 @@ const synear = caseStudies.find((c) => c.id.includes('synear-food'));
   <!-- ========== CTA BANNER ========== -->
   <section class="py-16 lg:py-24">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl lg:text-4xl font-bold text-primary mb-4">{t.home.ctaBanner}</h2>
-      <p class="text-lg text-text-muted mb-8 max-w-xl mx-auto">{t.home.ctaBannerDesc}</p>
+      <h2 class="text-3xl lg:text-4xl font-bold text-primary mb-4">{h.ctaBanner || t.home.ctaBanner}</h2>
+      <p class="text-lg text-text-muted mb-8 max-w-xl mx-auto">{h.ctaBannerDesc || t.home.ctaBannerDesc}</p>
       <a href="/contact/" class="inline-flex items-center gap-2 px-10 py-3.5 bg-primary hover:bg-primary-light text-white font-bold rounded-lg transition-colors text-lg">
-        {t.home.ctaButton}
+        {h.ctaButton || t.home.ctaButton}
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>
     </div>

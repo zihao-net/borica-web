@@ -8,8 +8,6 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #333; }
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-
-/* Login */
 #login { max-width: 400px; margin: 100px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); text-align: center; }
 #login h1 { font-size: 1.5rem; margin-bottom: 8px; }
 #login p { color: #888; margin-bottom: 24px; font-size: 0.9rem; }
@@ -18,20 +16,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 #login button { width: 100%; padding: 12px; background: #1a73e8; color: #fff; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
 #login button:hover { background: #1557b0; }
 #login .error { color: #d93025; margin-top: 12px; font-size: 0.85rem; }
-
-/* Header */
 .header { background: #fff; padding: 16px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-radius: 8px; }
 .header h2 { font-size: 1.2rem; }
 .header button { background: none; border: 1px solid #ddd; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
-
-/* Collections Grid */
 .col-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
 .col-card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; transition: box-shadow 0.2s; text-align: center; }
 .col-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .col-card .title { font-weight: 600; font-size: 1rem; }
 .col-card .count { color: #888; font-size: 0.8rem; margin-top: 4px; }
-
-/* Content List */
 .item-list { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); overflow: hidden; }
 .item-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; }
 .item-header h3 { font-size: 1rem; }
@@ -41,8 +33,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .item-row:last-child { border-bottom: none; }
 .item-row .title { font-weight: 500; }
 .item-row .slug { color: #888; font-size: 0.8rem; }
-
-/* Editor */
 .editor { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); padding: 24px; }
 .editor .field { margin-bottom: 16px; }
 .editor label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; color: #555; }
@@ -59,8 +49,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .editor .btn-delete:hover { background: #b3261e; }
 .editor .success { background: #e6f4ea; color: #1e8e3e; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; margin-top: 12px; display: none; }
 .editor .error { background: #fce8e6; color: #d93025; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; margin-top: 12px; display: none; }
-
-/* New item button */
 .btn-new { display: inline-block; padding: 8px 20px; background: #1a73e8; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
 .btn-new:hover { background: #1557b0; }
 </style>
@@ -70,56 +58,123 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <div id="app"></div>
 
 <script>
-const API_BASE = '/admin/api';
-let state = { view: 'login', collection: null, items: [], item: null, token: localStorage.getItem('admin_token') };
+// ----- Configuration -----
+const GH_REPO = 'zihao-net/borica-web';
+const GH_BRANCH = 'main';
+const GH_API = 'https://api.github.com/repos/' + GH_REPO;
 
-function render() {
-  const app = document.getElementById('app');
-  if (!state.token) return renderLogin(app);
-  if (state.view === 'dashboard') return renderDashboard(app);
-  if (state.view === 'list') return renderList(app);
-  if (state.view === 'editor') return renderEditor(app);
-}
-
-function renderLogin(app) {
-  app.innerHTML = `
-    <div id="login">
-      <h1>Borica 后台管理</h1>
-      <p>输入管理员密码登录</p>
-      <input type="password" id="pwd" placeholder="管理员密码" onkeydown="if(event.key==='Enter')login()">
-      <button onclick="login()">登录</button>
-      <div class="error" id="loginErr"></div>
-    </div>
-  `;
-}
-
-async function login() {
-  const pwd = document.getElementById('pwd').value;
-  const r = await fetch(API_BASE + '/login', { method:'POST', body:JSON.stringify({password:pwd}) });
-  const d = await r.json();
-  if (d.token) { localStorage.setItem('admin_token', d.token); state.token = d.token; state.view = 'dashboard'; render(); }
-  else { document.getElementById('loginErr').textContent = d.error || '密码错误'; }
-}
-
-function authFetch(url, opts = {}) {
-  opts.headers = opts.headers || {};
-  opts.headers['Authorization'] = 'Bearer ' + (state.token || localStorage.getItem('admin_token'));
-  return fetch(url, opts);
-}
-
-function logout() { localStorage.removeItem('admin_token'); state.token = null; state.view = 'login'; render(); }
-
-// Collections definition
 const COLLECTIONS = [
-  { id:'products_zh', label:'产品 (中文)', folder:'src/content/products/zh' },
-  { id:'products_en', label:'Products (EN)', folder:'src/content/products/en' },
-  { id:'solutions_zh', label:'解决方案 (中文)', folder:'src/content/solutions/zh' },
-  { id:'solutions_en', label:'Solutions (EN)', folder:'src/content/solutions/en' },
-  { id:'case_studies_zh', label:'客户案例 (中文)', folder:'src/content/caseStudies/zh' },
-  { id:'case_studies_en', label:'Case Studies (EN)', folder:'src/content/caseStudies/en' },
+  { id:'home_zh', label:'首页 (中文)', path:'src/content/pages/zh', single:true },
+  { id:'home_en', label:'Homepage (EN)', path:'src/content/pages/en', single:true },
+  { id:'products_zh', label:'产品 (中文)', path:'src/content/products/zh' },
+  { id:'products_en', label:'Products (EN)', path:'src/content/products/en' },
+  { id:'solutions_zh', label:'解决方案 (中文)', path:'src/content/solutions/zh' },
+  { id:'solutions_en', label:'Solutions (EN)', path:'src/content/solutions/en' },
+  { id:'case_studies_zh', label:'客户案例 (中文)', path:'src/content/caseStudies/zh' },
+  { id:'case_studies_en', label:'Case Studies (EN)', path:'src/content/caseStudies/en' },
 ];
 
 const FIELDS = {
+  home_zh: [
+    { key:'heroBadge', label:'横幅标签', type:'text' },
+    { key:'heroTitle', label:'横幅标题', type:'text' },
+    { key:'heroSubtitle', label:'横幅副标题', type:'text' },
+    { key:'heroImage', label:'横幅背景图', type:'text' },
+    { key:'heroCta1', label:'横幅按钮1', type:'text' },
+    { key:'heroCta2', label:'横幅按钮2', type:'text' },
+    { key:'_sep1', label:'—— 品牌故事 ——', type:'separator' },
+    { key:'brandLabel', label:'品牌标签', type:'text' },
+    { key:'brandHeading', label:'品牌标题 (支持HTML)', type:'text' },
+    { key:'brandDescription', label:'品牌描述', type:'text' },
+    { key:'brandImage', label:'品牌图片', type:'text' },
+    { key:'brandCta', label:'品牌按钮', type:'text' },
+    { key:'stat1Value', label:'统计1-数值', type:'text' },
+    { key:'stat1Label', label:'统计1-标签', type:'text' },
+    { key:'stat2Value', label:'统计2-数值', type:'text' },
+    { key:'stat2Label', label:'统计2-标签', type:'text' },
+    { key:'stat3Value', label:'统计3-数值', type:'text' },
+    { key:'stat3Label', label:'统计3-标签', type:'text' },
+    { key:'_sep2', label:'—— 三大核心业务 ——', type:'separator' },
+    { key:'pillarsTitle', label:'板块区标题', type:'text' },
+    { key:'pillar1Title', label:'板块1-标题', type:'text' },
+    { key:'pillar1Desc', label:'板块1-描述', type:'text' },
+    { key:'pillar1Link', label:'板块1-链接', type:'text' },
+    { key:'pillar2Title', label:'板块2-标题', type:'text' },
+    { key:'pillar2Desc', label:'板块2-描述', type:'text' },
+    { key:'pillar2Link', label:'板块2-链接', type:'text' },
+    { key:'pillar3Title', label:'板块3-标题', type:'text' },
+    { key:'pillar3Desc', label:'板块3-描述', type:'text' },
+    { key:'pillar3Link', label:'板块3-链接', type:'text' },
+    { key:'_sep3', label:'—— 产品展示区 ——', type:'separator' },
+    { key:'productSectionLabel', label:'产品区-标签', type:'text' },
+    { key:'productSectionTitle', label:'产品区-标题', type:'text' },
+    { key:'_sep4', label:'—— 创新板块 ——', type:'separator' },
+    { key:'innovationLabel', label:'创新-标签', type:'text' },
+    { key:'innovationTitle', label:'创新-标题 (支持HTML)', type:'text' },
+    { key:'innovationDesc', label:'创新-描述', type:'text' },
+    { key:'innovationImage', label:'创新-图片', type:'text' },
+    { key:'innovationFeature1', label:'创新-特性1', type:'text' },
+    { key:'innovationFeature2', label:'创新-特性2', type:'text' },
+    { key:'innovationFeature3', label:'创新-特性3', type:'text' },
+    { key:'_sep5', label:'—— 全球布局 ——', type:'separator' },
+    { key:'globalLabel', label:'全局-标签', type:'text' },
+    { key:'globalTitle', label:'全局-标题', type:'text' },
+    { key:'globalDesc', label:'全局-描述', type:'text' },
+    { key:'_sep6', label:'—— CTA 横幅 ——', type:'separator' },
+    { key:'ctaBanner', label:'CTA标题', type:'text' },
+    { key:'ctaBannerDesc', label:'CTA描述', type:'text' },
+    { key:'ctaButton', label:'CTA按钮', type:'text' },
+  ],
+  home_en: [
+    { key:'heroBadge', label:'Hero Badge', type:'text' },
+    { key:'heroTitle', label:'Hero Title', type:'text' },
+    { key:'heroSubtitle', label:'Hero Subtitle', type:'text' },
+    { key:'heroImage', label:'Hero Bg Image', type:'text' },
+    { key:'heroCta1', label:'Hero CTA 1', type:'text' },
+    { key:'heroCta2', label:'Hero CTA 2', type:'text' },
+    { key:'_sep1', label:'—— Brand Story ——', type:'separator' },
+    { key:'brandLabel', label:'Brand Label', type:'text' },
+    { key:'brandHeading', label:'Brand Heading (HTML ok)', type:'text' },
+    { key:'brandDescription', label:'Brand Description', type:'text' },
+    { key:'brandImage', label:'Brand Image', type:'text' },
+    { key:'brandCta', label:'Brand CTA', type:'text' },
+    { key:'stat1Value', label:'Stat 1 - Value', type:'text' },
+    { key:'stat1Label', label:'Stat 1 - Label', type:'text' },
+    { key:'stat2Value', label:'Stat 2 - Value', type:'text' },
+    { key:'stat2Label', label:'Stat 2 - Label', type:'text' },
+    { key:'stat3Value', label:'Stat 3 - Value', type:'text' },
+    { key:'stat3Label', label:'Stat 3 - Label', type:'text' },
+    { key:'_sep2', label:'—— Three Pillars ——', type:'separator' },
+    { key:'pillarsTitle', label:'Pillars Section Title', type:'text' },
+    { key:'pillar1Title', label:'Pillar 1 - Title', type:'text' },
+    { key:'pillar1Desc', label:'Pillar 1 - Description', type:'text' },
+    { key:'pillar1Link', label:'Pillar 1 - Link', type:'text' },
+    { key:'pillar2Title', label:'Pillar 2 - Title', type:'text' },
+    { key:'pillar2Desc', label:'Pillar 2 - Description', type:'text' },
+    { key:'pillar2Link', label:'Pillar 2 - Link', type:'text' },
+    { key:'pillar3Title', label:'Pillar 3 - Title', type:'text' },
+    { key:'pillar3Desc', label:'Pillar 3 - Description', type:'text' },
+    { key:'pillar3Link', label:'Pillar 3 - Link', type:'text' },
+    { key:'_sep3', label:'—— Products Section ——', type:'separator' },
+    { key:'productSectionLabel', label:'Products - Label', type:'text' },
+    { key:'productSectionTitle', label:'Products - Title', type:'text' },
+    { key:'_sep4', label:'—— Innovation ——', type:'separator' },
+    { key:'innovationLabel', label:'Innovation - Label', type:'text' },
+    { key:'innovationTitle', label:'Innovation - Title (HTML ok)', type:'text' },
+    { key:'innovationDesc', label:'Innovation - Description', type:'text' },
+    { key:'innovationImage', label:'Innovation - Image', type:'text' },
+    { key:'innovationFeature1', label:'Feature 1', type:'text' },
+    { key:'innovationFeature2', label:'Feature 2', type:'text' },
+    { key:'innovationFeature3', label:'Feature 3', type:'text' },
+    { key:'_sep5', label:'—— Global Presence ——', type:'separator' },
+    { key:'globalLabel', label:'Global - Label', type:'text' },
+    { key:'globalTitle', label:'Global - Title', type:'text' },
+    { key:'globalDesc', label:'Global - Description', type:'text' },
+    { key:'_sep6', label:'—— CTA Banner ——', type:'separator' },
+    { key:'ctaBanner', label:'CTA Banner', type:'text' },
+    { key:'ctaBannerDesc', label:'CTA Description', type:'text' },
+    { key:'ctaButton', label:'CTA Button', type:'text' },
+  ],
   products_zh: [
     { key:'title', label:'产品名称', type:'text' },
     { key:'model', label:'型号', type:'text' },
@@ -166,18 +221,150 @@ const FIELDS = {
   ],
 };
 
+// ----- State -----
+let state = {
+  view: 'login',
+  collection: null,
+  currentSlug: null,
+  items: [],
+  item: null,
+  token: localStorage.getItem('gh_token'),
+};
+
+// ----- GitHub API helpers -----
+function ghHeaders() {
+  return {
+    Authorization: 'token ' + state.token,
+    Accept: 'application/vnd.github.v3+json',
+    'User-Agent': 'borica-admin',
+  };
+}
+
+async function ghFetch(path, opts = {}) {
+  opts.headers = { ...ghHeaders(), ...opts.headers };
+  const res = await fetch(GH_API + path, opts);
+  const text = await res.text();
+  if (!res.ok) throw new Error(text.substring(0, 200));
+  try { return JSON.parse(text); } catch { return text; }
+}
+
+function decodeContent(raw) {
+  const bin = atob(raw.replace(/\s/g, ''));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+function encodeContent(str) {
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+function parseFrontMatter(content) {
+  const result = {};
+  const match = content.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!match) return result;
+  const yaml = match[1];
+  yaml.split('\n').forEach(line => {
+    const m = line.match(/^(\w+):\s*(.*)$/);
+    if (m) {
+      let val = m[2].trim();
+      if (val === 'true') val = true;
+      else if (val === 'false') val = false;
+      else if (/^\d+$/.test(val)) val = parseInt(val);
+      else val = val.replace(/^["']|["']$/g, '');
+      result[m[1]] = val;
+    }
+  });
+  return result;
+}
+
+function splitContent(content) {
+  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  if (!match) return { front: {}, body: content };
+  return { front: parseFrontMatter(match[1]), body: match[2].trimStart() };
+}
+
+function buildYaml(front) {
+  let yaml = '';
+  for (const [key, val] of Object.entries(front || {})) {
+    if (val === true || val === false) {
+      yaml += key + ': ' + val + '\n';
+    } else if (typeof val === 'number') {
+      yaml += key + ': ' + val + '\n';
+    } else if (val && typeof val === 'string') {
+      if (val.includes(':') || val.includes('#') || val.includes("'") || val.length > 40) {
+        yaml += key + ': "' + val.replace(/"/g, '\\"') + '"\n';
+      } else {
+        yaml += key + ': ' + val + '\n';
+      }
+    }
+  }
+  return yaml;
+}
+
+// ----- Render -----
+function render() {
+  const app = document.getElementById('app');
+  if (!state.token) return renderLogin(app);
+  if (state.view === 'dashboard') return renderDashboard(app);
+  if (state.view === 'list') return renderList(app);
+  if (state.view === 'editor') return renderEditor(app);
+}
+
+function renderLogin(app) {
+  app.innerHTML = `
+    <div id="login">
+      <h1>Borica 内容管理</h1>
+      <p>输入 GitHub Token 登录</p>
+      <input type="password" id="ghTokenInput" placeholder="GitHub Token" onkeydown="if(event.key==='Enter')login()">
+      <button onclick="login()">登录</button>
+      <div class="error" id="loginErr"></div>
+    </div>
+  `;
+}
+
+async function login() {
+  const token = document.getElementById('ghTokenInput').value.trim();
+  if (!token) { document.getElementById('loginErr').textContent = '请输入 Token'; return; }
+  // Verify token works
+  try {
+    const res = await fetch('https://api.github.com/user', {
+      headers: { Authorization: 'token ' + token, 'User-Agent': 'borica-admin' }
+    });
+    if (!res.ok) { document.getElementById('loginErr').textContent = 'Token 无效'; return; }
+    const user = await res.json();
+    localStorage.setItem('gh_token', token);
+    state.token = token;
+    state.view = 'dashboard';
+    render();
+  } catch(e) {
+    document.getElementById('loginErr').textContent = '连接失败: ' + e.message;
+  }
+}
+
+function logout() {
+  localStorage.removeItem('gh_token');
+  state.token = null;
+  state.view = 'login';
+  render();
+}
+
 function renderDashboard(app) {
   app.innerHTML = `
     <div class="container">
       <div class="header"><h2>Borica 内容管理</h2><button onclick="logout()">退出</button></div>
       <div class="col-grid">
-        ${COLLECTIONS.map(c => `<div class="col-card" onclick="openList('${c.id}')"><div class="title">${c.label}</div><div class="count">${c.folder}</div></div>`).join('')}
+        ${COLLECTIONS.map(c => `<div class="col-card" onclick="${c.single ? `openEditor('${c.id}','home')` : `openList('${c.id}')`}"><div class="title">${c.label}</div><div class="count">${c.single?'编辑首页配置':c.path}</div></div>`).join('')}
       </div>
     </div>
   `;
 }
 
-async function openList(id) {
+function openList(id) {
   state.collection = id;
   state.view = 'list';
   render();
@@ -200,20 +387,39 @@ function renderList(app) {
 }
 
 async function loadItems(cid) {
-  const r = await authFetch(API_BASE + '/items?collection=' + cid);
-  const d = await r.json();
-  const container = document.getElementById('itemList');
-  if (d.error) { container.innerHTML = '<div class="item-header"><h3>加载失败: ' + d.error + '</h3></div>'; return; }
-  container.innerHTML = `
-    <div class="item-header">
-      <h3>共 ${d.items.length} 项</h3>
-      <button class="btn-new" onclick="newItem('${cid}')">+ 新建</button>
-    </div>
-    ${d.items.map(i => `<div class="item-row" onclick="openEditor('${cid}','${i.slug}')">
-      <div><div class="title">${i.title || i.slug}</div><div class="slug">${i.slug}</div></div>
-      <div style="color:#888;font-size:0.8rem">${i.updated || ''}</div>
-    </div>`).join('')}
-  `;
+  const col = COLLECTIONS.find(c => c.id === cid);
+  try {
+    const files = await ghFetch('/contents/' + col.path + '?ref=' + GH_BRANCH);
+    const items = files.filter(f => f.name.endsWith('.md')).map(f => ({
+      slug: f.name.replace(/\.md$/, ''),
+      path: f.path,
+      sha: f.sha,
+    }));
+
+    // Get titles from front matter
+    for (const item of items) {
+      try {
+        const cd = await ghFetch('/contents/' + item.path + '?ref=' + GH_BRANCH);
+        const content = decodeContent(cd.content);
+        const fm = parseFrontMatter(content);
+        item.title = fm.title || item.slug;
+      } catch { item.title = item.slug; }
+    }
+
+    const container = document.getElementById('itemList');
+    container.innerHTML = `
+      <div class="item-header">
+        <h3>共 ${items.length} 项</h3>
+        <button class="btn-new" onclick="newItem('${cid}')">+ 新建</button>
+      </div>
+      ${items.map(i => `<div class="item-row" onclick="openEditor('${cid}','${i.slug}')">
+        <div><div class="title">${i.title || i.slug}</div><div class="slug">${i.slug}</div></div>
+      </div>`).join('')}
+    `;
+  } catch(e) {
+    const container = document.getElementById('itemList');
+    container.innerHTML = '<div class="item-header"><h3>加载失败: ' + e.message + '</h3></div>';
+  }
 }
 
 async function openEditor(cid, slug) {
@@ -231,7 +437,6 @@ async function newItem(cid) {
   state.currentSlug = slug;
   state.view = 'editor';
   render();
-  // Create empty item
   const fields = FIELDS[cid] || [];
   let front = { published: true };
   fields.forEach(f => { if (f.type === 'boolean') front[f.key] = false; else if (f.type === 'number') front[f.key] = 0; });
@@ -240,11 +445,23 @@ async function newItem(cid) {
 }
 
 async function loadItem(cid, slug) {
-  const r = await authFetch(API_BASE + '/item?collection=' + cid + '&slug=' + slug);
-  const d = await r.json();
-  if (d.error) { showEditorError(d.error); return; }
-  state.item = d;
-  renderEditorContent();
+  const col = COLLECTIONS.find(c => c.id === cid);
+  const path = col.path + '/' + slug + '.md';
+  try {
+    const data = await ghFetch('/contents/' + path + '?ref=' + GH_BRANCH);
+    const content = decodeContent(data.content);
+    const parsed = splitContent(content);
+    state.item = { slug, path, sha: data.sha, front: parsed.front, body: parsed.body };
+    renderEditorContent();
+  } catch(e) {
+    // If file doesn't exist on GitHub yet, create a default template
+    if (col?.single) {
+      state.item = { slug, path: col.path + '/' + slug + '.md', sha: null, front: {}, body: '' };
+      renderEditorContent();
+      return;
+    }
+    showEditorError('加载失败: ' + e.message);
+  }
 }
 
 function renderEditor(app) {
@@ -252,7 +469,7 @@ function renderEditor(app) {
   app.innerHTML = `
     <div class="container">
       <div class="header">
-        <h2><a href="#" onclick="state.view='list';render();openList(state.collection);return false" style="color:#888;text-decoration:none">←</a> ${col ? col.label : ''} / ${state.currentSlug || ''}</h2>
+        <h2><a href="#" onclick="${col?.single ? 'state.view=\'dashboard\';render()' : 'state.view=\'list\';render();openList(state.collection)'};return false" style="color:#888;text-decoration:none">←</a> ${col ? col.label : ''} / ${state.currentSlug || ''}</h2>
         <div></div>
       </div>
       <div class="editor" id="editorContent">
@@ -271,34 +488,39 @@ function renderEditorContent() {
 
   let html = '';
   fields.forEach(f => {
+    if (f.type === 'separator') {
+      html += '<div style="margin:20px 0 8px;padding:8px 0;border-bottom:1px solid #ddd;font-weight:700;color:#333;font-size:0.9rem">' + f.label + '</div>';
+      return;
+    }
     const val = front[f.key] !== undefined ? front[f.key] : '';
     if (f.type === 'boolean') {
-      html += `<div class="field"><label>${f.label}</label><select id="f_${f.key}"><option value="true" ${val===true?'selected':''}>是 / Yes</option><option value="false" ${val!==true?'selected':''}>否 / No</option></select></div>`;
+      html += '<div class="field"><label>' + f.label + '</label><select id="f_' + f.key + '"><option value="true"' + (val===true?' selected':'') + '>是 / Yes</option><option value="false"' + (val!==true?' selected':'') + '>否 / No</option></select></div>';
     } else if (f.type === 'select') {
-      const opts = f.options.map(o => `<option value="${o.v}" ${String(val)===o.v?'selected':''}>${o.l}</option>`).join('');
-      html += `<div class="field"><label>${f.label}</label><select id="f_${f.key}">${opts}</select></div>`;
+      const opts = f.options.map(o => '<option value="' + o.v + '"' + (String(val)===o.v?' selected':'') + '>' + o.l + '</option>').join('');
+      html += '<div class="field"><label>' + f.label + '</label><select id="f_' + f.key + '">' + opts + '</select></div>';
     } else if (f.type === 'number') {
-      html += `<div class="field"><label>${f.label}</label><input type="number" id="f_${f.key}" value="${val||0}"></div>`;
+      html += '<div class="field"><label>' + f.label + '</label><input type="number" id="f_' + f.key + '" value="' + (val||0) + '"></div>';
     } else {
-      html += `<div class="field"><label>${f.label}</label><input type="text" id="f_${f.key}" value="${String(val||'').replace(/"/g,'&quot;')}"></div>`;
+      html += '<div class="field"><label>' + f.label + '</label><input type="text" id="f_' + f.key + '" value="' + String(val||'').replace(/"/g,'&quot;') + '"></div>';
     }
   });
 
-  html += `<div class="field"><label>正文 (Markdown)</label><textarea id="f_body">${(item.body||'').replace(/</g,'&lt;')}</textarea></div>`;
-  html += `<div class="success" id="saveSuccess">已保存！Cloudflare 正在自动部署...</div>`;
-  html += `<div class="error" id="saveError"></div>`;
-  html += `<div class="actions">
-    <button class="btn-save" onclick="saveItem()">保存</button>
-    <button class="btn-back" onclick="state.view='list';render();openList(state.collection)">返回</button>
-    <button class="btn-delete" onclick="deleteItem()" style="margin-left:auto">删除</button>
-  </div>`;
+  html += '<div class="field"><label>正文 (Markdown)</label><textarea id="f_body">' + (item.body||'').replace(/</g,'&lt;') + '</textarea></div>';
+  html += '<div class="field"><label>上传图片</label><input type="file" id="imgFile" accept="image/*"><button class="btn-new" onclick="uploadImage()" style="margin-top:4px">上传</button><span id="imgStatus" style="margin-left:8px;font-size:0.85rem;color:#888"></span></div>';
+  html += '<div class="success" id="saveSuccess">已保存！已提交到 GitHub。</div>';
+  html += '<div class="error" id="saveError"></div>';
+  html += '<div class="actions">';
+  html += '  <button class="btn-save" onclick="saveItem()">保存</button>';
+  html += '  <button class="btn-back" onclick="' + (COLLECTIONS.find(c=>c.id===state.collection)?.single ? 'state.view=\'dashboard\';render()' : 'state.view=\'list\';render();openList(state.collection)') + '">返回</button>';
+  html += '  <button class="btn-delete" onclick="deleteItem()" style="margin-left:auto">删除</button>';
+  html += '</div>';
 
   container.innerHTML = html;
 }
 
 function showEditorError(msg) {
   const container = document.getElementById('editorContent');
-  if (container) container.innerHTML = `<div class="field"><div class="error" style="display:block">${msg}</div><button class="btn-back" onclick="state.view='list';render();openList(state.collection)">返回</button></div>`;
+  if (container) container.innerHTML = '<div class="field"><div class="error" style="display:block">' + msg + '</div><button class="btn-back" onclick="state.view=\'list\';render();openList(state.collection)">返回</button></div>';
 }
 
 function getFieldValue(key, type) {
@@ -309,40 +531,117 @@ function getFieldValue(key, type) {
   return el.value;
 }
 
+async function uploadImage() {
+  const fileInput = document.getElementById('imgFile');
+  const file = fileInput && fileInput.files[0];
+  if (!file) { document.getElementById('imgStatus').textContent = '请选择图片'; return; }
+
+  document.getElementById('imgStatus').textContent = '读取中...';
+
+  // Get image dimensions and preview
+  const img = await new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+  const fileSize = (file.size / 1024).toFixed(1) + ' KB';
+  const dims = img.naturalWidth + '×' + img.naturalHeight;
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const base64 = e.target.result.split(',')[1];
+    const ext = file.name.split('.').pop();
+    const filename = state.currentSlug + '-' + Date.now() + '.' + ext;
+    const path = 'public/images/products/' + filename;
+
+    document.getElementById('imgStatus').textContent = '上传中...';
+
+    try {
+      await ghFetch('/contents/' + path, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'CMS: upload image ' + filename,
+          content: base64,
+          branch: GH_BRANCH,
+        }),
+      });
+
+      const heroInput = document.getElementById('f_heroImage');
+      if (heroInput) heroInput.value = '/images/products/' + filename;
+
+      document.getElementById('imgStatus').innerHTML =
+        '✓ 上传成功 <b>' + dims + '</b> ' + fileSize +
+        ' <a href="/images/products/' + filename + '" target="_blank">预览</a>';
+      fileInput.value = '';
+    } catch(err) {
+      document.getElementById('imgStatus').textContent = '上传失败: ' + err.message;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
 async function saveItem() {
   const fields = FIELDS[state.collection] || [];
   const front = {};
   fields.forEach(f => { front[f.key] = getFieldValue(f.key, f.type); });
   const body = document.getElementById('f_body') ? document.getElementById('f_body').value : '';
+  const yaml = buildYaml(front);
+  const newContent = '---\n' + yaml + '---\n' + (body || '');
 
-  const r = await authFetch(API_BASE + '/save', {
-    method: 'POST',
-    body: JSON.stringify({
-      collection: state.collection,
-      slug: state.currentSlug,
-      front: front,
-      body: body
-    })
-  });
-  const d = await r.json();
-  if (d.error) {
-    document.getElementById('saveError').textContent = d.error;
-    document.getElementById('saveError').style.display = 'block';
-  } else {
+  const col = COLLECTIONS.find(c => c.id === state.collection);
+  const path = col.path + '/' + state.currentSlug + '.md';
+
+  try {
+    // Get existing file SHA
+    let sha = null;
+    try {
+      const existing = await ghFetch('/contents/' + path + '?ref=' + GH_BRANCH);
+      sha = existing.sha;
+    } catch {}
+
+    await ghFetch('/contents/' + path, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: sha ? 'CMS: update ' + state.currentSlug : 'CMS: create ' + state.currentSlug,
+        content: encodeContent(newContent),
+        sha: sha || undefined,
+        branch: GH_BRANCH,
+      }),
+    });
+
     document.getElementById('saveSuccess').style.display = 'block';
     document.getElementById('saveError').style.display = 'none';
+  } catch(e) {
+    document.getElementById('saveError').textContent = '保存失败: ' + e.message;
+    document.getElementById('saveError').style.display = 'block';
   }
 }
 
 async function deleteItem() {
   if (!confirm('确认删除 ' + state.currentSlug + '？此操作不可撤销！')) return;
-  const r = await authFetch(API_BASE + '/delete', {
-    method: 'POST',
-    body: JSON.stringify({ collection: state.collection, slug: state.currentSlug })
-  });
-  const d = await r.json();
-  if (d.error) { document.getElementById('saveError').textContent = d.error; document.getElementById('saveError').style.display = 'block'; }
-  else { state.view = 'list'; render(); openList(state.collection); }
+  const col = COLLECTIONS.find(c => c.id === state.collection);
+  const path = col.path + '/' + state.currentSlug + '.md';
+  try {
+    const existing = await ghFetch('/contents/' + path + '?ref=' + GH_BRANCH);
+    await ghFetch('/contents/' + path, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'CMS: delete ' + state.currentSlug,
+        sha: existing.sha,
+        branch: GH_BRANCH,
+      }),
+    });
+    state.view = 'list';
+    render();
+    openList(state.collection);
+  } catch(e) {
+    document.getElementById('saveError').textContent = '删除失败: ' + e.message;
+    document.getElementById('saveError').style.display = 'block';
+  }
 }
 
 render();
